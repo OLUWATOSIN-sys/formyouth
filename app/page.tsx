@@ -79,19 +79,21 @@ export default function Home() {
           </div>
           
           <div className="mb-6">
-            <p className="text-[#D4AF37] text-sm md:text-base font-semibold tracking-widest mb-2">
-              CCC PRESENTS THE YEAR
-            </p>
+           
             <div className="flex justify-center mb-4 px-4">
-              <Image
-                src="/galayouth.png"
-                alt="Youth Gala"
-                width={1200}
-                height={400}
-                className="w-full max-w-4xl h-auto drop-shadow-2xl"
-                style={{ filter: 'drop-shadow(0 0 30px rgba(212, 175, 55, 0.6))' }}
-                priority
-              />
+              <div className="relative w-full max-w-4xl">
+                <Image
+                  src="/galayouth.png"
+                  alt="Youth Gala"
+                  width={1200}
+                  height={400}
+                  className="w-full h-auto relative z-10"
+                  style={{ 
+                    filter: 'brightness(1.2) contrast(1.3) drop-shadow(0 0 40px rgba(212, 175, 55, 0.8)) drop-shadow(0 0 80px rgba(255, 215, 0, 0.5))',
+                  }}
+                  priority
+                />
+              </div>
             </div>
             <p className="text-[#FFD700] text-xl md:text-2xl font-bold tracking-wider">
               THEME: ROYALTY
@@ -198,24 +200,12 @@ export default function Home() {
               </button>
             </form>
 
-            <div className="mt-8 pt-6 border-t border-[#D4AF37]/30 text-center">
-              <p className="text-white/60 text-sm">
-                Dress Code: <span className="text-[#D4AF37] font-semibold">Royal Attire</span>
-              </p>
-              <p className="text-white/60 text-sm mt-2">
-                For inquiries, contact us at{" "}
-                <a href="mailto:info@cccyouth.com" className="text-[#D4AF37] hover:text-[#FFD700]">
-                  info@cccyouth.com
-                </a>
-              </p>
-            </div>
+         
           </div>
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-12 text-white/40 text-sm">
-          <p>© 2025 CCC Youth Gala. All rights reserved.</p>
-        </div>
+       
       </div>
     </div>
   );
