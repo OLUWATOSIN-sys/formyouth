@@ -9,7 +9,12 @@ const transporter = nodemailer.createTransport({
     user: "rccggala@gmail.com",
     pass: "lhszogcayohmthtx",
   },
+  tls: {
+    rejectUnauthorized: false
+  }
 });
+
+console.log("📧 Email transporter initialized");
 
 export async function sendPaymentUploadEmail(
   to: string,

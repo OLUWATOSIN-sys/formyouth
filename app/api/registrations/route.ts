@@ -51,12 +51,19 @@ export async function POST(request: Request) {
     // Send email with upload link
     const uploadLink = `https://rccgyouthheavensgate.org/upload-payment/${paymentUploadToken}`;
     
-    // Send email (don't wait for it to avoid blocking)
-    console.log("Attempting to send email to:", body.email);
-    const { sendPaymentUploadEmail } = await import("@/lib/email");
-    sendPaymentUploadEmail(body.email, body.name, uploadLink, body.guests)
-      .then(() => console.log("Email sent successfully to:", body.email))
-      .catch(err => console.error("Failed to send email:", err));
+    // Send email and wait for it to complete
+    try {
+      console.log("Attempting to send email to:", body.email);
+      const { sendPaymentUploadEmail } = await import("@/lib/email");
+      const emailResult = await sendPaymentUploadEmail(body.email, body.name, uploadLink, body.guests);
+      if (emailResult.success) {
+        console.log("✅ Email sent successfully to:", body.email);
+      } else {
+        console.error("❌ Email failed:", emailResult.error);
+      }
+    } catch (emailError) {
+      console.error("❌ Email error:", emailError);
+    }
 
     return NextResponse.json({ 
       success: true, 
