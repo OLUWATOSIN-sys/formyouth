@@ -82,10 +82,14 @@ export async function sendPaymentUploadEmail(
             
             <div class="info-box">
               <h4 style="color: #FFD700; margin-top: 0;">Payment Instructions:</h4>
-              <p><strong>Bank:</strong> [Your Bank Name]</p>
-              <p><strong>Account Name:</strong> [Account Name]</p>
-              <p><strong>Account Number:</strong> [Account Number]</p>
+              <p style="margin-bottom: 15px;"><strong style="color: #D4AF37;">Standard Bank Details:</strong></p>
+              <p><strong>Account Name:</strong> Temitope Olaniran</p>
+              <p><strong>Account Number:</strong> 208281622</p>
+              <p><strong>Bank:</strong> Standard Bank</p>
               <p><strong>Reference:</strong> ${name.replace(/\s+/g, '')}</p>
+              
+              <p style="margin-top: 20px; margin-bottom: 10px;"><strong style="color: #D4AF37;">Or use eWallet:</strong></p>
+              <p><strong>eWallet Number:</strong> +27 65 879 1180</p>
             </div>
             
             <p>After making payment, click the button above to upload your proof of payment (bank receipt or screenshot).</p>
