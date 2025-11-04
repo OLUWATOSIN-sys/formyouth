@@ -82,9 +82,17 @@ export default function Home() {
             <p className="text-[#D4AF37] text-sm md:text-base font-semibold tracking-widest mb-2">
               CCC PRESENTS THE YEAR
             </p>
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black mb-4 gold-shimmer leading-none">
-              YOUTH GALA
-            </h1>
+            <div className="flex justify-center mb-4 px-4">
+              <Image
+                src="/galayouth.png"
+                alt="Youth Gala"
+                width={1200}
+                height={400}
+                className="w-full max-w-4xl h-auto drop-shadow-2xl"
+                style={{ filter: 'drop-shadow(0 0 30px rgba(212, 175, 55, 0.6))' }}
+                priority
+              />
+            </div>
             <p className="text-[#FFD700] text-xl md:text-2xl font-bold tracking-wider">
               THEME: ROYALTY
             </p>
