@@ -79,6 +79,16 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Fixed background image */}
+      <div 
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(/background.png)',
+          opacity: 0.15,
+          backgroundAttachment: 'fixed'
+        }}
+      ></div>
+      
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-[#D4AF37] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse"></div>
@@ -171,7 +181,7 @@ export default function Home() {
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-black/50 border-2 border-[#D4AF37]/30 rounded-lg text-white placeholder-white/30 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 transition-all"
-                  placeholder="your.email@example.com"
+                  placeholder="your.name@email.com"
                 />
               </div>
 
