@@ -34,16 +34,20 @@ export async function sendPaymentUploadEmail(
       <head>
         <style>
           body { font-family: Arial, sans-serif; background-color: #000; color: #fff; padding: 20px; }
-          .container { max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); border: 2px solid #D4AF37; border-radius: 10px; padding: 30px; }
+          .container { max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); border: 2px solid #D4AF37; border-radius: 10px; padding: 30px; color: #fff; }
           .header { text-align: center; margin-bottom: 30px; }
           .logo { width: 80px; height: 80px; margin: 0 auto 20px; }
           h1 { color: #D4AF37; font-size: 32px; margin: 0; text-transform: uppercase; }
+          h3, h4 { color: #D4AF37; }
           .gold { color: #FFD700; }
-          .content { line-height: 1.6; }
+          .content { line-height: 1.6; color: #fff; }
+          .content p { color: #fff; }
           .button { display: inline-block; background: linear-gradient(90deg, #B8941E 0%, #D4AF37 50%, #FFD700 100%); color: #000; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
-          .info-box { background: rgba(212, 175, 55, 0.1); border: 1px solid #D4AF37; border-radius: 8px; padding: 20px; margin: 20px 0; }
+          .info-box { background: rgba(212, 175, 55, 0.1); border: 1px solid #D4AF37; border-radius: 8px; padding: 20px; margin: 20px 0; color: #fff; }
+          .info-box p { color: #fff; }
           .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #888; }
           .warning { color: #ff6b6b; font-weight: bold; }
+          strong { color: #FFD700; }
         </style>
       </head>
       <body>
@@ -86,10 +90,8 @@ export async function sendPaymentUploadEmail(
             
             <p>After making payment, click the button above to upload your proof of payment (bank receipt or screenshot).</p>
             
-            <p>If you have any questions, please contact us at <a href="mailto:info@cccyouth.com" style="color: #D4AF37;">info@cccyouth.com</a></p>
-            
             <p style="margin-top: 30px;">We look forward to seeing you!</p>
-            <p><strong style="color: #D4AF37;">The Youth Gala Team</strong></p>
+            <p><strong style="color: #D4AF37;">Rccg Heaven's Gate Youth</strong></p>
           </div>
           
         </div>
@@ -129,12 +131,16 @@ export async function sendPaymentConfirmationEmail(
       <head>
         <style>
           body { font-family: Arial, sans-serif; background-color: #000; color: #fff; padding: 20px; }
-          .container { max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); border: 2px solid #D4AF37; border-radius: 10px; padding: 30px; }
+          .container { max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); border: 2px solid #D4AF37; border-radius: 10px; padding: 30px; color: #fff; }
           .header { text-align: center; margin-bottom: 30px; }
           h1 { color: #D4AF37; font-size: 32px; margin: 0; }
+          h2, h3 { color: #D4AF37; }
           .gold { color: #FFD700; }
           .success { background: rgba(76, 175, 80, 0.2); border: 1px solid #4CAF50; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center; }
-          .info-box { background: rgba(212, 175, 55, 0.1); border: 1px solid #D4AF37; border-radius: 8px; padding: 20px; margin: 20px 0; }
+          .info-box { background: rgba(212, 175, 55, 0.1); border: 1px solid #D4AF37; border-radius: 8px; padding: 20px; margin: 20px 0; color: #fff; }
+          .info-box p { color: #fff; }
+          p { color: #fff; }
+          strong { color: #FFD700; }
         </style>
       </head>
       <body>
