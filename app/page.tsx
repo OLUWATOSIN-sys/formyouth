@@ -49,7 +49,7 @@ export default function Home() {
   if (submitted) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <div className="max-w-2xl w-full text-center fade-in">
+        <div className="max-w-3xl w-full text-center fade-in">
           <div className="float-animation mb-8">
             <Image
               src="/logo.png"
@@ -59,6 +59,18 @@ export default function Home() {
               className="mx-auto"
             />
           </div>
+          
+          {/* Thank You Image */}
+          <div className="mb-8 flex justify-center">
+            <Image
+              src="/addthankyou.png"
+              alt="Thank You"
+              width={600}
+              height={400}
+              className="w-full max-w-2xl h-auto"
+            />
+          </div>
+          
           <h1 className="text-5xl md:text-7xl font-bold mb-6 gold-shimmer">
             THANK YOU!
           </h1>
