@@ -4,12 +4,16 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 interface Registration {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   phone: string;
   guests: string;
   timestamp: string;
+  paymentStatus: "not_paid" | "proof_uploaded" | "confirmed";
+  proofOfPayment: string | null;
+  proofUploadedAt: string | null;
+  paymentConfirmedAt: string | null;
 }
 
 export default function AdminPage() {
@@ -18,17 +22,57 @@ export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedProof, setSelectedProof] = useState<string | null>(null);
+  const [showProofModal, setShowProofModal] = useState(false);
 
-  const ADMIN_PASSWORD = "YouthGala2025!"; // Change this to your secure password
+  const ADMIN_PASSWORD = "YouthGala2025!";
+  const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 minutes
+
+  // Session management
+  useEffect(() => {
+    const sessionStart = localStorage.getItem("adminSessionStart");
+    if (sessionStart) {
+      const elapsed = Date.now() - parseInt(sessionStart);
+      if (elapsed < SESSION_TIMEOUT) {
+        setIsAuthenticated(true);
+        fetchRegistrations();
+        startSessionTimer();
+      } else {
+        localStorage.removeItem("adminSessionStart");
+      }
+    }
+  }, []);
+
+  const startSessionTimer = () => {
+    const timer = setInterval(() => {
+      const sessionStart = localStorage.getItem("adminSessionStart");
+      if (sessionStart) {
+        const elapsed = Date.now() - parseInt(sessionStart);
+        if (elapsed >= SESSION_TIMEOUT) {
+          handleLogout();
+        }
+      }
+    }, 60000); // Check every minute
+
+    return () => clearInterval(timer);
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === ADMIN_PASSWORD) {
       setIsAuthenticated(true);
+      localStorage.setItem("adminSessionStart", Date.now().toString());
       fetchRegistrations();
+      startSessionTimer();
     } else {
       alert("Incorrect password!");
     }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem("adminSessionStart");
+    setRegistrations([]);
   };
 
   const fetchRegistrations = async () => {
@@ -43,6 +87,76 @@ export default function AdminPage() {
     setLoading(false);
   };
 
+  const handleDeleteRegistration = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this registration?")) return;
+
+    try {
+      const response = await fetch("/api/admin/delete-registration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+
+      if (response.ok) {
+        fetchRegistrations();
+      } else {
+        alert("Failed to delete registration");
+      }
+    } catch (error) {
+      console.error("Error deleting:", error);
+      alert("An error occurred");
+    }
+  };
+
+  const handleConfirmPayment = async (id: string) => {
+    if (!confirm("Confirm that payment has been received?")) return;
+
+    try {
+      const response = await fetch("/api/admin/confirm-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+
+      if (response.ok) {
+        fetchRegistrations();
+      } else {
+        alert("Failed to confirm payment");
+      }
+    } catch (error) {
+      console.error("Error confirming payment:", error);
+      alert("An error occurred");
+    }
+  };
+
+  const viewProof = (proofImage: string) => {
+    setSelectedProof(proofImage);
+    setShowProofModal(true);
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return (
+          <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-semibold">
+            ✓ Paid
+          </span>
+        );
+      case "proof_uploaded":
+        return (
+          <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm font-semibold">
+            ⏳ Proof Uploaded
+          </span>
+        );
+      default:
+        return (
+          <span className="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-sm font-semibold">
+            ✗ Not Paid
+          </span>
+        );
+    }
+  };
+
   const filteredRegistrations = registrations.filter(
     (reg) =>
       reg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -54,6 +168,10 @@ export default function AdminPage() {
     (sum, reg) => sum + parseInt(reg.guests),
     0
   );
+
+  const paidCount = registrations.filter(
+    (r) => r.paymentStatus === "confirmed"
+  ).length;
 
   if (!isAuthenticated) {
     return (
@@ -93,6 +211,9 @@ export default function AdminPage() {
             >
               Login
             </button>
+            <p className="text-white/50 text-sm mt-4 text-center">
+              Session expires after 15 minutes of inactivity
+            </p>
           </form>
         </div>
       </div>
@@ -112,7 +233,7 @@ export default function AdminPage() {
             </div>
           </div>
           <button
-            onClick={() => setIsAuthenticated(false)}
+            onClick={handleLogout}
             className="px-6 py-2 border-2 border-[#D4AF37] text-[#D4AF37] rounded-lg hover:bg-[#D4AF37] hover:text-black transition-all"
           >
             Logout
@@ -120,7 +241,7 @@ export default function AdminPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-[#D4AF37] rounded-xl p-6">
             <p className="text-white/70 text-sm mb-1">Total Registrations</p>
             <p className="text-4xl font-bold text-[#D4AF37]">{registrations.length}</p>
@@ -128,6 +249,10 @@ export default function AdminPage() {
           <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-[#D4AF37] rounded-xl p-6">
             <p className="text-white/70 text-sm mb-1">Total Guests</p>
             <p className="text-4xl font-bold text-[#FFD700]">{totalGuests}</p>
+          </div>
+          <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-[#D4AF37] rounded-xl p-6">
+            <p className="text-white/70 text-sm mb-1">Confirmed Paid</p>
+            <p className="text-4xl font-bold text-green-400">{paidCount}</p>
           </div>
           <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-[#D4AF37] rounded-xl p-6">
             <p className="text-white/70 text-sm mb-1">Expected Revenue</p>
@@ -157,26 +282,28 @@ export default function AdminPage() {
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Email</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Phone</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Guests</th>
+                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Status</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Date</th>
+                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-white/70">
+                    <td colSpan={8} className="px-6 py-8 text-center text-white/70">
                       Loading registrations...
                     </td>
                   </tr>
                 ) : filteredRegistrations.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-white/70">
+                    <td colSpan={8} className="px-6 py-8 text-center text-white/70">
                       No registrations found
                     </td>
                   </tr>
                 ) : (
                   filteredRegistrations.map((reg, index) => (
                     <tr
-                      key={reg.id}
+                      key={reg._id}
                       className="border-t border-[#D4AF37]/20 hover:bg-[#D4AF37]/5 transition-colors"
                     >
                       <td className="px-6 py-4 text-white">{index + 1}</td>
@@ -184,8 +311,38 @@ export default function AdminPage() {
                       <td className="px-6 py-4 text-white/80">{reg.email}</td>
                       <td className="px-6 py-4 text-white/80">{reg.phone}</td>
                       <td className="px-6 py-4 text-[#D4AF37] font-semibold">{reg.guests}</td>
+                      <td className="px-6 py-4">{getStatusBadge(reg.paymentStatus)}</td>
                       <td className="px-6 py-4 text-white/60 text-sm">
                         {new Date(reg.timestamp).toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          {reg.paymentStatus === "proof_uploaded" && reg.proofOfPayment && (
+                            <>
+                              <button
+                                onClick={() => viewProof(reg.proofOfPayment!)}
+                                className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 text-sm"
+                                title="View Proof"
+                              >
+                                👁️ View
+                              </button>
+                              <button
+                                onClick={() => handleConfirmPayment(reg._id)}
+                                className="px-3 py-1 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 text-sm"
+                                title="Confirm Payment"
+                              >
+                                ✓ Confirm
+                              </button>
+                            </>
+                          )}
+                          <button
+                            onClick={() => handleDeleteRegistration(reg._id)}
+                            className="px-3 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 text-sm"
+                            title="Delete"
+                          >
+                            🗑️
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -200,12 +357,13 @@ export default function AdminPage() {
           <button
             onClick={() => {
               const csv = [
-                ["Name", "Email", "Phone", "Guests", "Date"],
+                ["Name", "Email", "Phone", "Guests", "Payment Status", "Date"],
                 ...registrations.map((reg) => [
                   reg.name,
                   reg.email,
                   reg.phone,
                   reg.guests,
+                  reg.paymentStatus,
                   new Date(reg.timestamp).toLocaleString(),
                 ]),
               ]
@@ -224,6 +382,31 @@ export default function AdminPage() {
           </button>
         </div>
       </div>
+
+      {/* Proof Modal */}
+      {showProofModal && selectedProof && (
+        <div
+          className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50"
+          onClick={() => setShowProofModal(false)}
+        >
+          <div className="max-w-4xl w-full bg-zinc-900 border-2 border-[#D4AF37] rounded-xl p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-bold text-[#D4AF37]">Proof of Payment</h3>
+              <button
+                onClick={() => setShowProofModal(false)}
+                className="text-white/70 hover:text-white text-3xl"
+              >
+                ×
+              </button>
+            </div>
+            <img
+              src={selectedProof}
+              alt="Proof of payment"
+              className="w-full h-auto max-h-[70vh] object-contain rounded-lg"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
