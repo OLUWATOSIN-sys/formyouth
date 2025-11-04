@@ -84,7 +84,7 @@ export default function Home() {
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: 'url(/background.png)',
-          opacity: 0.15,
+          opacity: 0.5,
           backgroundAttachment: 'fixed'
         }}
       ></div>
