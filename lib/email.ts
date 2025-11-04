@@ -1,13 +1,13 @@
 import nodemailer from "nodemailer";
 
-// Create reusable transporter
+// Create reusable transporter with hardcoded credentials
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.SMTP_PORT || "587"),
+  host: "smtp.gmail.com",
+  port: 587,
   secure: false, // true for 465, false for other ports
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
+    user: "rccggala@gmail.com",
+    pass: "lhszogcayohmthtx",
   },
 });
 
@@ -20,7 +20,7 @@ export async function sendPaymentUploadEmail(
   const amount = parseInt(guests) * 500;
 
   const mailOptions = {
-    from: `"Youth Gala 2025" <${process.env.SMTP_USER}>`,
+    from: `"Youth Gala 2025" <rccggala@gmail.com>`,
     to: to,
     subject: "Youth Gala 2025 - Complete Your Registration",
     html: `
@@ -87,10 +87,6 @@ export async function sendPaymentUploadEmail(
             <p><strong style="color: #D4AF37;">The Youth Gala Team</strong></p>
           </div>
           
-          <div class="footer">
-            <p>© 2025 CCC Youth Gala. All rights reserved.</p>
-            <p>This is an automated email. Please do not reply directly to this message.</p>
-          </div>
         </div>
       </body>
       </html>
@@ -98,17 +94,17 @@ export async function sendPaymentUploadEmail(
   };
 
   try {
-    console.log("Sending email from:", process.env.SMTP_USER, "to:", to);
+    console.log("Sending email from: rccggala@gmail.com to:", to);
     const info = await transporter.sendMail(mailOptions);
     console.log("Email sent successfully:", info.messageId);
     return { success: true };
   } catch (error) {
     console.error("Error sending email:", error);
     console.error("SMTP Config:", {
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
-      user: process.env.SMTP_USER,
-      hasPassword: !!process.env.SMTP_PASSWORD
+      host: "smtp.gmail.com",
+      port: 587,
+      user: "rccggala@gmail.com",
+      hasPassword: true
     });
     return { success: false, error };
   }
@@ -119,7 +115,7 @@ export async function sendPaymentConfirmationEmail(
   name: string
 ) {
   const mailOptions = {
-    from: `"Youth Gala 2025" <${process.env.SMTP_USER}>`,
+    from: `"Youth Gala 2025" <rccggala@gmail.com>`,
     to: to,
     subject: "Youth Gala 2025 - Payment Confirmed! 🎉",
     html: `
