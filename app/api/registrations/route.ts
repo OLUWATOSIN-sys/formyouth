@@ -53,10 +53,13 @@ export async function POST(request: Request) {
     
     // Send email (don't wait for it to avoid blocking)
     if (process.env.SMTP_USER) {
+      console.log("Attempting to send email to:", body.email);
       const { sendPaymentUploadEmail } = await import("@/lib/email");
-      sendPaymentUploadEmail(body.email, body.name, uploadLink, body.guests).catch(err => 
-        console.error("Failed to send email:", err)
-      );
+      sendPaymentUploadEmail(body.email, body.name, uploadLink, body.guests)
+        .then(() => console.log("Email sent successfully to:", body.email))
+        .catch(err => console.error("Failed to send email:", err));
+    } else {
+      console.log("SMTP not configured - skipping email");
     }
 
     return NextResponse.json({ 

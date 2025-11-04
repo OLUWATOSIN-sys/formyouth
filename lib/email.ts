@@ -98,10 +98,18 @@ export async function sendPaymentUploadEmail(
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    console.log("Sending email from:", process.env.SMTP_USER, "to:", to);
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully:", info.messageId);
     return { success: true };
   } catch (error) {
     console.error("Error sending email:", error);
+    console.error("SMTP Config:", {
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      user: process.env.SMTP_USER,
+      hasPassword: !!process.env.SMTP_PASSWORD
+    });
     return { success: false, error };
   }
 }
