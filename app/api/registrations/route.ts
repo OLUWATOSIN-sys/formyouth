@@ -48,11 +48,16 @@ export async function POST(request: Request) {
     const db = client.db("youthgala");
     const result = await db.collection("registrations").insertOne(newRegistration);
 
-    // Send email with upload link (we'll implement this next)
+    // Send email with upload link
     const uploadLink = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/upload-payment/${paymentUploadToken}`;
     
-    // TODO: Send email with uploadLink
-    console.log("Payment upload link:", uploadLink);
+    // Send email (don't wait for it to avoid blocking)
+    if (process.env.SMTP_USER) {
+      const { sendPaymentUploadEmail } = await import("@/lib/email");
+      sendPaymentUploadEmail(body.email, body.name, uploadLink, body.guests).catch(err => 
+        console.error("Failed to send email:", err)
+      );
+    }
 
     return NextResponse.json({ 
       success: true, 

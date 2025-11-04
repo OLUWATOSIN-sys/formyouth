@@ -1,0 +1,175 @@
+import nodemailer from "nodemailer";
+
+// Create reusable transporter
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  port: parseInt(process.env.SMTP_PORT || "587"),
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASSWORD,
+  },
+});
+
+export async function sendPaymentUploadEmail(
+  to: string,
+  name: string,
+  uploadLink: string,
+  guests: string
+) {
+  const amount = parseInt(guests) * 500;
+
+  const mailOptions = {
+    from: `"Youth Gala 2025" <${process.env.SMTP_USER}>`,
+    to: to,
+    subject: "Youth Gala 2025 - Complete Your Registration",
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; background-color: #000; color: #fff; padding: 20px; }
+          .container { max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); border: 2px solid #D4AF37; border-radius: 10px; padding: 30px; }
+          .header { text-align: center; margin-bottom: 30px; }
+          .logo { width: 80px; height: 80px; margin: 0 auto 20px; }
+          h1 { color: #D4AF37; font-size: 32px; margin: 0; text-transform: uppercase; }
+          .gold { color: #FFD700; }
+          .content { line-height: 1.6; }
+          .button { display: inline-block; background: linear-gradient(90deg, #B8941E 0%, #D4AF37 50%, #FFD700 100%); color: #000; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
+          .info-box { background: rgba(212, 175, 55, 0.1); border: 1px solid #D4AF37; border-radius: 8px; padding: 20px; margin: 20px 0; }
+          .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #888; }
+          .warning { color: #ff6b6b; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Youth Gala 2025</h1>
+            <p class="gold">Theme: ROYALTY</p>
+          </div>
+          
+          <div class="content">
+            <p>Dear <strong>${name}</strong>,</p>
+            
+            <p>Thank you for registering for the <strong>Youth Gala 2025</strong>! We're excited to have you join us for this prestigious event.</p>
+            
+            <div class="info-box">
+              <h3 style="color: #D4AF37; margin-top: 0;">Registration Details:</h3>
+              <p><strong>Number of Guests:</strong> ${guests}</p>
+              <p><strong>Total Amount:</strong> R${amount}</p>
+              <p><strong>Event Date:</strong> 29th November 2025</p>
+              <p><strong>Dress Code:</strong> Royal Attire</p>
+            </div>
+            
+            <h3 style="color: #D4AF37;">Next Step: Upload Proof of Payment</h3>
+            
+            <p>To complete your registration, please make your payment and upload proof using the link below:</p>
+            
+            <div style="text-align: center;">
+              <a href="${uploadLink}" class="button">UPLOAD PROOF OF PAYMENT</a>
+            </div>
+            
+            <p class="warning">⚠️ Important: This link is valid for 24 hours only!</p>
+            
+            <div class="info-box">
+              <h4 style="color: #FFD700; margin-top: 0;">Payment Instructions:</h4>
+              <p><strong>Bank:</strong> [Your Bank Name]</p>
+              <p><strong>Account Name:</strong> [Account Name]</p>
+              <p><strong>Account Number:</strong> [Account Number]</p>
+              <p><strong>Reference:</strong> ${name.replace(/\s+/g, '')}</p>
+            </div>
+            
+            <p>After making payment, click the button above to upload your proof of payment (bank receipt or screenshot).</p>
+            
+            <p>If you have any questions, please contact us at <a href="mailto:info@cccyouth.com" style="color: #D4AF37;">info@cccyouth.com</a></p>
+            
+            <p style="margin-top: 30px;">We look forward to seeing you!</p>
+            <p><strong style="color: #D4AF37;">The Youth Gala Team</strong></p>
+          </div>
+          
+          <div class="footer">
+            <p>© 2025 CCC Youth Gala. All rights reserved.</p>
+            <p>This is an automated email. Please do not reply directly to this message.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return { success: true };
+  } catch (error) {
+    console.error("Error sending email:", error);
+    return { success: false, error };
+  }
+}
+
+export async function sendPaymentConfirmationEmail(
+  to: string,
+  name: string
+) {
+  const mailOptions = {
+    from: `"Youth Gala 2025" <${process.env.SMTP_USER}>`,
+    to: to,
+    subject: "Youth Gala 2025 - Payment Confirmed! 🎉",
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; background-color: #000; color: #fff; padding: 20px; }
+          .container { max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); border: 2px solid #D4AF37; border-radius: 10px; padding: 30px; }
+          .header { text-align: center; margin-bottom: 30px; }
+          h1 { color: #D4AF37; font-size: 32px; margin: 0; }
+          .gold { color: #FFD700; }
+          .success { background: rgba(76, 175, 80, 0.2); border: 1px solid #4CAF50; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center; }
+          .info-box { background: rgba(212, 175, 55, 0.1); border: 1px solid #D4AF37; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>✓ Payment Confirmed!</h1>
+          </div>
+          
+          <div class="success">
+            <h2 style="color: #4CAF50; margin: 0;">Your registration is complete!</h2>
+          </div>
+          
+          <p>Dear <strong>${name}</strong>,</p>
+          
+          <p>Great news! Your payment has been confirmed and your registration for <strong>Youth Gala 2025</strong> is now complete.</p>
+          
+          <div class="info-box">
+            <h3 style="color: #D4AF37; margin-top: 0;">Event Details:</h3>
+            <p><strong>Date:</strong> 29th November 2025</p>
+            <p><strong>Theme:</strong> ROYALTY</p>
+            <p><strong>Dress Code:</strong> Royal Attire</p>
+            <p><strong>Entry Fee:</strong> R500 per person</p>
+          </div>
+          
+          <p>We look forward to seeing you at the event! Get ready for an unforgettable night of celebration.</p>
+          
+          <p>If you have any questions, contact us at <a href="mailto:info@cccyouth.com" style="color: #D4AF37;">info@cccyouth.com</a></p>
+          
+          <p style="margin-top: 30px;"><strong style="color: #D4AF37;">See you there!</strong></p>
+          
+          <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #888;">
+            <p>© 2025 CCC Youth Gala. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return { success: true };
+  } catch (error) {
+    console.error("Error sending confirmation email:", error);
+    return { success: false, error };
+  }
+}
