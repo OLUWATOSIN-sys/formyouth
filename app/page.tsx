@@ -101,12 +101,12 @@ export default function Home() {
           <div className="mb-6">
            
             <div className="flex justify-center mb-4 px-4">
-              <div className="relative w-full max-w-4xl">
+              <div className="relative w-full max-w-5xl">
                 <Image
                   src="/galayouth.png"
                   alt="Youth Gala"
-                  width={1200}
-                  height={400}
+                  width={1400}
+                  height={500}
                   className="w-full h-auto relative z-10"
                   style={{ 
                     filter: 'brightness(1.2) contrast(1.3) drop-shadow(0 0 40px rgba(212, 175, 55, 0.8)) drop-shadow(0 0 80px rgba(255, 215, 0, 0.5))',
