@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 
 // GET - Retrieve all registrations
 export async function GET() {
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     
     // Generate unique token for payment upload (valid for 24 hours)
-    const paymentUploadToken = uuidv4();
+    const paymentUploadToken = randomUUID();
     const paymentUploadExpiry = new Date();
     paymentUploadExpiry.setHours(paymentUploadExpiry.getHours() + 24);
     

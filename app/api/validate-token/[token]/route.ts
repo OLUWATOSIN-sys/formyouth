@@ -3,14 +3,16 @@ import clientPromise from "@/lib/mongodb";
 
 export async function GET(
   request: Request,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
   try {
+    const { token } = await params;
+    
     const client = await clientPromise;
     const db = client.db("youthgala");
     
     const registrant = await db.collection("registrations").findOne({
-      paymentUploadToken: params.token,
+      paymentUploadToken: token,
     });
 
     if (!registrant) {
