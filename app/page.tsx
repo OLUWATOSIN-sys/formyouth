@@ -9,6 +9,7 @@ export default function Home() {
     email: "",
     phone: "",
     guests: "1",
+    guestNames: ["", "", "", "", ""], // Array for up to 5 guest names
     ticketType: "", // "vip" or "regular"
     dietaryRequirement: "none", // "none", "vegan", "vegetarian"
     allergies: "",
@@ -56,6 +57,15 @@ export default function Home() {
       ticketType: type,
     });
     setShowLanding(false);
+  };
+
+  const handleGuestNameChange = (index: number, value: string) => {
+    const newGuestNames = [...formData.guestNames];
+    newGuestNames[index] = value;
+    setFormData({
+      ...formData,
+      guestNames: newGuestNames,
+    });
   };
 
   // Landing Page
@@ -388,9 +398,35 @@ export default function Home() {
                   <option value="2">2 Guests</option>
                   <option value="3">3 Guests</option>
                   <option value="4">4 Guests</option>
-                  <option value="5">5+ Guests</option>
+                  <option value="5">5 Guests</option>
                 </select>
               </div>
+
+              {/* Guest Names Section */}
+              {parseInt(formData.guests) > 0 && (
+                <div className="fade-in bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-lg p-6" style={{ animationDelay: "0.35s" }}>
+                  <h3 className="text-[#D4AF37] font-bold text-lg mb-4">Guest Names</h3>
+                  <p className="text-white/70 text-sm mb-4">Please provide the full names of all guests attending (including yourself)</p>
+                  <div className="space-y-3">
+                    {Array.from({ length: parseInt(formData.guests) }).map((_, index) => (
+                      <div key={index}>
+                        <label htmlFor={`guest-${index}`} className="block text-white/80 font-medium mb-1 text-sm">
+                          Guest {index + 1} {index === 0 && "(Main Registrant)"} *
+                        </label>
+                        <input
+                          type="text"
+                          id={`guest-${index}`}
+                          required
+                          value={formData.guestNames[index]}
+                          onChange={(e) => handleGuestNameChange(index, e.target.value)}
+                          className="w-full px-4 py-2.5 bg-black/50 border-2 border-[#D4AF37]/30 rounded-lg text-white placeholder-white/30 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 transition-all"
+                          placeholder={index === 0 ? formData.name || "Full Name" : "Full Name"}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="fade-in" style={{ animationDelay: "0.4s" }}>
                 <label htmlFor="dietaryRequirement" className="block text-[#D4AF37] font-semibold mb-2">

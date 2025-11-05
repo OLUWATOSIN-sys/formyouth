@@ -35,6 +35,7 @@ export async function POST(request: Request) {
       email: body.email,
       phone: body.phone,
       guests: body.guests,
+      guestNames: body.guestNames || [],
       ticketType: body.ticketType || "regular", // "vip" or "regular"
       dietaryRequirement: body.dietaryRequirement || "none",
       allergies: body.allergies || "",

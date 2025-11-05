@@ -9,6 +9,7 @@ interface Registration {
   email: string;
   phone: string;
   guests: string;
+  guestNames: string[];
   ticketType: "vip" | "regular";
   dietaryRequirement: string;
   allergies: string;
@@ -293,6 +294,7 @@ export default function AdminPage() {
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Phone</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Ticket</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Guests</th>
+                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Guest Names</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Diet</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Allergies</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Status</th>
@@ -303,13 +305,13 @@ export default function AdminPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={11} className="px-6 py-8 text-center text-white/70">
+                    <td colSpan={12} className="px-6 py-8 text-center text-white/70">
                       Loading registrations...
                     </td>
                   </tr>
                 ) : filteredRegistrations.length === 0 ? (
                   <tr>
-                    <td colSpan={11} className="px-6 py-8 text-center text-white/70">
+                    <td colSpan={12} className="px-6 py-8 text-center text-white/70">
                       No registrations found
                     </td>
                   </tr>
@@ -333,6 +335,22 @@ export default function AdminPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-[#D4AF37] font-semibold">{reg.guests}</td>
+                      <td className="px-6 py-4">
+                        <div className="text-white/80 text-sm max-w-xs">
+                          {reg.guestNames && reg.guestNames.length > 0 ? (
+                            <div className="space-y-1">
+                              {reg.guestNames.filter(name => name.trim()).map((name, idx) => (
+                                <div key={idx} className="flex items-start gap-1">
+                                  <span className="text-[#D4AF37] font-semibold">{idx + 1}.</span>
+                                  <span>{name}</span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-white/40">-</span>
+                          )}
+                        </div>
+                      </td>
                       <td className="px-6 py-4 text-white/80 capitalize">{reg.dietaryRequirement || "None"}</td>
                       <td className="px-6 py-4 text-white/80">{reg.allergies || "-"}</td>
                       <td className="px-6 py-4">{getStatusBadge(reg.paymentStatus)}</td>

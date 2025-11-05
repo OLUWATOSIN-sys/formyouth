@@ -169,7 +169,7 @@ export default function MoodboardPage() {
                 {/* Overlay on hover */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-6">
                   <span className="text-[#FFD700] font-bold text-lg">
-                    {image.includes("man") ? "Men's Look" : "Women's Look"}
+                    {image.includes("woman") ? "Women's Look" : "Men's Look"}
                   </span>
                 </div>
               </div>
@@ -225,7 +225,7 @@ export default function MoodboardPage() {
               {/* Image Label */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent p-6">
                 <p className="text-[#FFD700] font-bold text-xl text-center">
-                  {selectedImage.includes("man") ? "Men's Royal Look" : "Women's Royal Look"}
+                  {selectedImage.includes("woman") ? "Women's Royal Look" : "Men's Royal Look"}
                 </p>
               </div>
             </div>
