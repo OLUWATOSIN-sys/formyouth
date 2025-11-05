@@ -211,18 +211,17 @@ export default function Home() {
               width={150}
               height={150}
               className="mx-auto"
+              style={{ width: 'auto', height: 'auto' }}
             />
           </div>
           
-          {/* Thank You Image */}
-          <div className="mb-8 flex justify-center">
-            <Image
-              src="/addthankyou.png"
-              alt="Thank You"
-              width={600}
-              height={400}
-              className="w-full max-w-2xl h-auto"
-            />
+          {/* Success Icon */}
+          <div className="mb-8">
+            <div className="w-24 h-24 mx-auto bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] rounded-full flex items-center justify-center">
+              <svg className="w-16 h-16 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold mb-6 gold-shimmer">
@@ -234,10 +233,16 @@ export default function Home() {
           <p className="text-lg text-[#D4AF37] mb-8">
             We look forward to seeing you at the Youth Gala
           </p>
-          <div className="bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] p-6 rounded-lg">
-            <p className="text-black font-bold text-xl mb-2">29TH NOVEMBER 2025</p>
-            <p className="text-black font-semibold">Gates Open at 5pm</p>
+          
+          <div className="bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] p-8 rounded-lg mb-6">
+            <p className="text-black font-bold text-2xl mb-3">📅 29TH NOVEMBER 2025</p>
+            <p className="text-black font-semibold text-lg mb-2">⏰ Gates Open at 5pm</p>
+            <p className="text-black font-semibold text-lg">👑 Theme: ROYALTY</p>
           </div>
+          
+          <p className="text-white/70 text-sm">
+            Check your email for payment instructions and event details
+          </p>
         </div>
       </div>
     );
