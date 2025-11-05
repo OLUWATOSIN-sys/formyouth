@@ -53,7 +53,7 @@ export default function MoodboardPage() {
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: 'url("/MOOD BOARD_design.png")',
-          opacity: 0.15,
+          opacity: 0.35,
           backgroundAttachment: "fixed",
         }}
       ></div>
