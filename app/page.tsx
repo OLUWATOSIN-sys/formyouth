@@ -106,9 +106,15 @@ export default function Home() {
                   />
                 </div>
               </div>
-              <p className="text-[#FFD700] text-xl md:text-2xl font-bold tracking-wider">
-                THEME: ROYALTY
-              </p>
+              <div className="flex justify-center">
+                <Image
+                  src="/theme.png"
+                  alt="Theme: Royalty"
+                  width={450}
+                  height={120}
+                  className="h-auto"
+                />
+              </div>
             </div>
 
             <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-white mb-12">
@@ -258,9 +264,15 @@ export default function Home() {
                 />
               </div>
             </div>
-            <p className="text-[#FFD700] text-xl md:text-2xl font-bold tracking-wider">
-              THEME: ROYALTY
-            </p>
+            <div className="flex justify-center">
+              <Image
+                src="/theme.png"
+                alt="Theme: Royalty"
+                width={350}
+                height={95}
+                className="h-auto"
+              />
+            </div>
           </div>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-white mb-8">
