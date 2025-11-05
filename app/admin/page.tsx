@@ -148,20 +148,20 @@ export default function AdminPage() {
     switch (status) {
       case "confirmed":
         return (
-          <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-semibold">
-            ✓ Paid
+          <span className="px-4 py-1.5 bg-green-500/20 text-green-400 rounded text-sm font-semibold">
+            Paid
           </span>
         );
       case "proof_uploaded":
         return (
-          <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm font-semibold">
-            ⏳ Proof Uploaded
+          <span className="px-4 py-1.5 bg-yellow-500/20 text-yellow-400 rounded text-sm font-semibold">
+            Proof Uploaded
           </span>
         );
       default:
         return (
-          <span className="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-sm font-semibold">
-            ✗ Not Paid
+          <span className="px-4 py-1.5 bg-red-500/20 text-red-400 rounded text-sm font-semibold">
+            Not Paid
           </span>
         );
     }
@@ -342,23 +342,32 @@ export default function AdminPage() {
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
                           {reg.paymentStatus === "proof_uploaded" && reg.proofOfPayment && (
-                            <button
-                              onClick={() => handleConfirmPayment(reg._id)}
-                              disabled={actionLoading === `confirm-${reg._id}`}
-                              className="px-3 py-1 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-                              title="Confirm Payment"
-                            >
-                              {actionLoading === `confirm-${reg._id}` ? (
-                                <>
-                                  <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                  </svg>
-                                </>
-                              ) : (
-                                "✓ Confirm"
-                              )}
-                            </button>
+                            <>
+                              <button
+                                onClick={() => viewProof(reg.proofOfPayment!)}
+                                className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 text-sm"
+                                title="View Proof"
+                              >
+                                👁️ View
+                              </button>
+                              <button
+                                onClick={() => handleConfirmPayment(reg._id)}
+                                disabled={actionLoading === `confirm-${reg._id}`}
+                                className="px-3 py-1 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                                title="Confirm Payment"
+                              >
+                                {actionLoading === `confirm-${reg._id}` ? (
+                                  <>
+                                    <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                  </>
+                                ) : (
+                                  "✓ Confirm"
+                                )}
+                              </button>
+                            </>
                           )}
                           <button
                             onClick={() => handleDeleteRegistration(reg._id)}

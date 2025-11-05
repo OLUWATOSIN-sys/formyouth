@@ -91,7 +91,7 @@ export default function Home() {
             </div>
             
             <div className="mb-6">
-              <div className="flex justify-center mb-4 px-4">
+              <div className="flex justify-center px-4">
                 <div className="relative w-full max-w-5xl">
                   <Image
                     src="/galayouth.png"
@@ -106,7 +106,7 @@ export default function Home() {
                   />
                 </div>
               </div>
-              <div className="flex justify-center">
+              <div className="flex justify-center -mt-2">
                 <Image
                   src="/theme.png"
                   alt="Theme: Royalty"
@@ -209,7 +209,7 @@ export default function Home() {
           </p>
           <div className="bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] p-6 rounded-lg">
             <p className="text-black font-bold text-xl mb-2">29TH NOVEMBER 2025</p>
-            <p className="text-black font-semibold">Gates Open @ R500</p>
+            <p className="text-black font-semibold">Gates Open @ 5pm</p>
           </div>
         </div>
       </div>
@@ -249,7 +249,7 @@ export default function Home() {
           
           <div className="mb-6">
            
-            <div className="flex justify-center mb-4 px-4">
+            <div className="flex justify-center px-4">
               <div className="relative w-full max-w-5xl">
                 <Image
                   src="/galayouth.png"
@@ -264,7 +264,7 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center -mt-2">
               <Image
                 src="/theme.png"
                 alt="Theme: Royalty"
@@ -282,7 +282,7 @@ export default function Home() {
             </div>
             <div className="hidden md:block w-px h-12 bg-[#D4AF37]"></div>
             <div className="text-xl md:text-2xl font-bold">
-              <span className="text-[#D4AF37]">Gates @</span> R500
+              <span className="gold-shimmer">Gates Open at 5pm</span>
             </div>
           </div>
         </div>
