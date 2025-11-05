@@ -117,7 +117,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-white mb-12">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-white mb-8">
               <div className="flex items-center gap-2">
                 <span className="text-3xl md:text-5xl font-bold gold-shimmer">29TH</span>
                 <span className="text-lg md:text-xl">NOV 2025</span>
@@ -126,6 +126,23 @@ export default function Home() {
               <div className="text-xl md:text-2xl font-bold">
                 <span className="gold-shimmer">DRESS CODE: ROYAL ATTIRE</span>
               </div>
+            </div>
+
+            {/* Moodboard Button */}
+            <div className="text-center mb-12 fade-in">
+              <a
+                href="/moodboard"
+                className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] text-black font-bold text-xl rounded-lg hover:scale-110 transform transition-all duration-300 shadow-2xl hover:shadow-[#FFD700]/50 glow-effect"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                MOODBOARD
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+              <p className="text-white/60 text-sm mt-3">View Royal Attire Inspiration</p>
             </div>
 
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
