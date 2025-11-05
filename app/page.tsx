@@ -204,45 +204,61 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="max-w-3xl w-full text-center fade-in">
-          <div className="float-animation mb-8">
-            <Image
-              src="/logo.png"
-              alt="CCC Logo"
-              width={150}
-              height={150}
-              className="mx-auto"
-              style={{ width: 'auto', height: 'auto' }}
-            />
-          </div>
-          
-          {/* Success Icon */}
-          <div className="mb-8">
-            <div className="w-24 h-24 mx-auto bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] rounded-full flex items-center justify-center">
-              <svg className="w-16 h-16 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-              </svg>
+          {/* Three Logos at Top */}
+          <div className="flex justify-center items-center gap-4 mb-8 float-animation">
+            <div className="w-16 h-16 md:w-20 md:h-20 relative bg-white rounded-full flex items-center justify-center overflow-hidden">
+              <Image
+                src="/logo.png"
+                alt="Logo 1"
+                width={60}
+                height={60}
+                className="object-contain"
+                style={{ width: 'auto', height: 'auto' }}
+              />
+            </div>
+            <div className="w-16 h-16 md:w-20 md:h-20 relative bg-white rounded-full flex items-center justify-center overflow-hidden">
+              <Image
+                src="/logo.png"
+                alt="Logo 2"
+                width={60}
+                height={60}
+                className="object-contain"
+                style={{ width: 'auto', height: 'auto' }}
+              />
+            </div>
+            <div className="w-16 h-16 md:w-20 md:h-20 relative bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-[#D4AF37]">
+              <Image
+                src="/logo.png"
+                alt="Logo 3"
+                width={60}
+                height={60}
+                className="object-contain"
+                style={{ width: 'auto', height: 'auto' }}
+              />
             </div>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 gold-shimmer">
+          <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tight" style={{ 
+            background: 'linear-gradient(90deg, #B8941E 0%, #D4AF37 50%, #FFD700 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
             THANK YOU!
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 mb-4">
+          
+          <p className="text-xl md:text-2xl text-white mb-4">
             Your invitation has been confirmed
           </p>
-          <p className="text-lg text-[#D4AF37] mb-8">
+          
+          <p className="text-lg md:text-xl text-[#D4AF37] mb-10">
             We look forward to seeing you at the Youth Gala
           </p>
           
-          <div className="bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] p-8 rounded-lg mb-6">
-            <p className="text-black font-bold text-2xl mb-3">📅 29TH NOVEMBER 2025</p>
-            <p className="text-black font-semibold text-lg mb-2">⏰ Gates Open at 5pm</p>
-            <p className="text-black font-semibold text-lg">👑 Theme: ROYALTY</p>
+          <div className="bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] p-8 rounded-xl max-w-2xl mx-auto">
+            <p className="text-black font-bold text-2xl md:text-3xl mb-2">29TH NOVEMBER 2025</p>
+            <p className="text-black/80 font-semibold text-lg">Gates Open at 5pm</p>
           </div>
-          
-          <p className="text-white/70 text-sm">
-            Check your email for payment instructions and event details
-          </p>
         </div>
       </div>
     );
