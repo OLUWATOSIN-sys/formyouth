@@ -22,6 +22,7 @@ export default function MoodboardPage() {
     "/man4.jpg",
     "/man5.jpg",
     "/man6.jpg",
+    "/man664.jpg",
     "/man99768.jpg",
   ];
 
@@ -35,7 +36,6 @@ export default function MoodboardPage() {
     "/woman34232.jpg",
     "/woman44.jpg",
     "/woman443.jpg",
-    "/woman664.jpg",
     "/woman772732323.jpg",
   ];
 

@@ -99,6 +99,18 @@ export async function sendPaymentUploadEmail(
             
             <p>After making payment, click the button above to upload your proof of payment (bank receipt or screenshot).</p>
             
+            <h3 style="color: #D4AF37; margin-top: 40px;">Need Style Inspiration?</h3>
+            <p>Check out our Royal Attire Moodboard for outfit ideas!</p>
+            
+            <div style="text-align: center; margin: 20px 0;">
+              <a href="https://rccgyouthheavensgate.org/moodboard" style="text-decoration: none;">
+                <img src="https://rccgyouthheavensgate.org/MOOD%20BOARD_design.png" alt="Moodboard" style="max-width: 100%; height: auto; border: 2px solid #D4AF37; border-radius: 8px; display: block; margin: 0 auto;" />
+              </a>
+              <p style="margin-top: 10px;">
+                <a href="https://rccgyouthheavensgate.org/moodboard" style="color: #FFD700; text-decoration: none; font-weight: bold;">👑 View Full Moodboard Gallery →</a>
+              </p>
+            </div>
+            
             <p style="margin-top: 30px;">We look forward to seeing you!</p>
             <p><strong style="color: #D4AF37;">Rccg Heaven's Gate Youth</strong></p>
           </div>
