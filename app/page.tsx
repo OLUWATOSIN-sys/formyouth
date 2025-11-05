@@ -226,7 +226,7 @@ export default function Home() {
           </p>
           <div className="bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] p-6 rounded-lg">
             <p className="text-black font-bold text-xl mb-2">29TH NOVEMBER 2025</p>
-            <p className="text-black font-semibold">Gates Open @ 5pm</p>
+            <p className="text-black font-semibold">Gates Open at 5pm</p>
           </div>
         </div>
       </div>
