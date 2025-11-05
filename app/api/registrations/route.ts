@@ -35,6 +35,9 @@ export async function POST(request: Request) {
       email: body.email,
       phone: body.phone,
       guests: body.guests,
+      ticketType: body.ticketType || "regular", // "vip" or "regular"
+      dietaryRequirement: body.dietaryRequirement || "none",
+      allergies: body.allergies || "",
       timestamp: new Date().toISOString(),
       paymentStatus: "not_paid",
       proofOfPayment: null,
@@ -55,7 +58,7 @@ export async function POST(request: Request) {
     try {
       console.log("Attempting to send email to:", body.email);
       const { sendPaymentUploadEmail } = await import("@/lib/email");
-      const emailResult = await sendPaymentUploadEmail(body.email, body.name, uploadLink, body.guests);
+      const emailResult = await sendPaymentUploadEmail(body.email, body.name, uploadLink, body.guests, body.ticketType || "regular");
       if (emailResult.success) {
         console.log("✅ Email sent successfully to:", body.email);
       } else {

@@ -20,9 +20,12 @@ export async function sendPaymentUploadEmail(
   to: string,
   name: string,
   uploadLink: string,
-  guests: string
+  guests: string,
+  ticketType: string = "regular"
 ) {
-  const amount = parseInt(guests) * 500;
+  const pricePerPerson = ticketType === "vip" ? 1500 : 500;
+  const amount = parseInt(guests) * pricePerPerson;
+  const ticketLabel = ticketType === "vip" ? "VIP" : "Regular";
 
   const mailOptions = {
     from: `"Youth Gala 2025" <rccggala@gmail.com>`,
@@ -64,7 +67,9 @@ export async function sendPaymentUploadEmail(
             
             <div class="info-box">
               <h3 style="color: #D4AF37; margin-top: 0;">Registration Details:</h3>
+              <p><strong>Ticket Type:</strong> ${ticketLabel}</p>
               <p><strong>Number of Guests:</strong> ${guests}</p>
+              <p><strong>Price Per Person:</strong> R${pricePerPerson}</p>
               <p><strong>Total Amount:</strong> R${amount}</p>
               <p><strong>Event Date:</strong> 29th November 2025</p>
               <p><strong>Dress Code:</strong> Royal Attire</p>

@@ -9,9 +9,13 @@ export default function Home() {
     email: "",
     phone: "",
     guests: "1",
+    ticketType: "", // "vip" or "regular"
+    dietaryRequirement: "none", // "none", "vegan", "vegetarian"
+    allergies: "",
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +49,123 @@ export default function Home() {
       [e.target.name]: e.target.value,
     });
   };
+
+  const handleTicketSelection = (type: "vip" | "regular") => {
+    setFormData({
+      ...formData,
+      ticketType: type,
+    });
+    setShowLanding(false);
+  };
+
+  // Landing Page
+  if (showLanding) {
+    return (
+      <div className="min-h-screen bg-black relative overflow-hidden">
+        {/* Fixed background image */}
+        <div 
+          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: 'url(/background.png)',
+            opacity: 0.5,
+            backgroundAttachment: 'fixed'
+          }}
+        ></div>
+        
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-[#D4AF37] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#FFD700] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse delay-1000"></div>
+        </div>
+
+        <div className="relative z-10 container mx-auto px-4 py-12 md:py-20">
+          <div className="text-center mb-12 fade-in">
+            <div className="float-animation mb-8">
+              <Image
+                src="/logo.png"
+                alt="CCC Logo"
+                width={150}
+                height={150}
+                className="mx-auto"
+              />
+            </div>
+            
+            <div className="mb-6">
+              <div className="flex justify-center mb-4 px-4">
+                <div className="relative w-full max-w-5xl">
+                  <Image
+                    src="/galayouth.png"
+                    alt="Youth Gala"
+                    width={1400}
+                    height={500}
+                    className="w-full h-auto relative z-10"
+                    style={{ 
+                      filter: 'brightness(1.2) contrast(1.3) drop-shadow(0 0 40px rgba(212, 175, 55, 0.8)) drop-shadow(0 0 80px rgba(255, 215, 0, 0.5))',
+                    }}
+                    priority
+                  />
+                </div>
+              </div>
+              <p className="text-[#FFD700] text-xl md:text-2xl font-bold tracking-wider">
+                THEME: ROYALTY
+              </p>
+            </div>
+
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-white mb-12">
+              <div className="flex items-center gap-2">
+                <span className="text-3xl md:text-5xl font-bold gold-shimmer">29TH</span>
+                <span className="text-lg md:text-xl">NOV 2025</span>
+              </div>
+              <div className="hidden md:block w-px h-12 bg-[#D4AF37]"></div>
+              <div className="text-xl md:text-2xl font-bold">
+                <span className="gold-shimmer">DRESS CODE: ROYAL ATTIRE</span>
+              </div>
+            </div>
+
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
+              Choose Your <span className="gold-shimmer">Ticket Type</span>
+            </h2>
+
+            {/* Ticket Selection Cards */}
+            <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 px-4">
+              {/* Regular Ticket */}
+              <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-[#D4AF37] rounded-2xl p-8 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-[#D4AF37]/50">
+                <h3 className="text-2xl md:text-3xl font-bold text-[#D4AF37] mb-4">REGULAR</h3>
+                <div className="mb-8">
+                  <span className="text-5xl md:text-6xl font-bold text-white">R500</span>
+                  <p className="text-white/70 mt-2">per person</p>
+                </div>
+                <button
+                  onClick={() => handleTicketSelection("regular")}
+                  className="w-full py-4 px-8 bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] text-black font-bold text-lg rounded-lg hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-[#D4AF37]/50"
+                >
+                  SELECT REGULAR
+                </button>
+              </div>
+
+              {/* VIP Ticket */}
+              <div className="bg-gradient-to-br from-zinc-900 to-black border-4 border-[#FFD700] rounded-2xl p-8 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-[#FFD700]/50 relative">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] text-black px-6 py-2 rounded-full font-bold text-sm">
+                  PREMIUM
+                </div>
+                <h3 className="text-2xl md:text-3xl font-bold text-[#FFD700] mb-4 mt-4">VIP</h3>
+                <div className="mb-8">
+                  <span className="text-5xl md:text-6xl font-bold text-white">R1500</span>
+                  <p className="text-white/70 mt-2">per person</p>
+                </div>
+                <button
+                  onClick={() => handleTicketSelection("vip")}
+                  className="w-full py-4 px-8 bg-gradient-to-r from-[#FFD700] via-[#D4AF37] to-[#B8941E] text-black font-bold text-lg rounded-lg hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-[#FFD700]/50"
+                >
+                  SELECT VIP
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (submitted) {
     return (
@@ -160,9 +281,18 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-2 gold-shimmer">
               RSVP NOW
             </h2>
-            <p className="text-center text-white/70 mb-8">
+            <p className="text-center text-white/70 mb-4">
               Secure your spot at the most prestigious youth event of the year
             </p>
+            
+            {/* Show selected ticket type */}
+            <div className="text-center mb-8 p-4 bg-gradient-to-r from-[#B8941E]/20 via-[#D4AF37]/20 to-[#FFD700]/20 border border-[#D4AF37] rounded-lg">
+              <p className="text-white/70 text-sm mb-1">Selected Ticket:</p>
+              <p className="text-2xl font-bold gold-shimmer">
+                {formData.ticketType === "vip" ? "VIP - R1500" : "REGULAR - R500"}
+              </p>
+              <p className="text-white/60 text-sm mt-1">per person</p>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="fade-in">
@@ -231,6 +361,38 @@ export default function Home() {
                   <option value="4">4 Guests</option>
                   <option value="5">5+ Guests</option>
                 </select>
+              </div>
+
+              <div className="fade-in" style={{ animationDelay: "0.4s" }}>
+                <label htmlFor="dietaryRequirement" className="block text-[#D4AF37] font-semibold mb-2">
+                  Dietary Requirement
+                </label>
+                <select
+                  id="dietaryRequirement"
+                  name="dietaryRequirement"
+                  value={formData.dietaryRequirement}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-black/50 border-2 border-[#D4AF37]/30 rounded-lg text-white focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 transition-all"
+                >
+                  <option value="none">None</option>
+                  <option value="vegan">Vegan</option>
+                  <option value="vegetarian">Vegetarian</option>
+                </select>
+              </div>
+
+              <div className="fade-in" style={{ animationDelay: "0.5s" }}>
+                <label htmlFor="allergies" className="block text-[#D4AF37] font-semibold mb-2">
+                  Allergies (if any)
+                </label>
+                <input
+                  type="text"
+                  id="allergies"
+                  name="allergies"
+                  value={formData.allergies}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-black/50 border-2 border-[#D4AF37]/30 rounded-lg text-white placeholder-white/30 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 transition-all"
+                  placeholder="e.g., Peanuts, Shellfish, etc."
+                />
               </div>
 
               <button

@@ -9,6 +9,9 @@ interface Registration {
   email: string;
   phone: string;
   guests: string;
+  ticketType: "vip" | "regular";
+  dietaryRequirement: string;
+  allergies: string;
   timestamp: string;
   paymentStatus: "not_paid" | "proof_uploaded" | "confirmed";
   proofOfPayment: string | null;
@@ -288,7 +291,10 @@ export default function AdminPage() {
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Name</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Email</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Phone</th>
+                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Ticket</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Guests</th>
+                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Diet</th>
+                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Allergies</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Status</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Date</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Actions</th>
@@ -297,13 +303,13 @@ export default function AdminPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-8 text-center text-white/70">
+                    <td colSpan={11} className="px-6 py-8 text-center text-white/70">
                       Loading registrations...
                     </td>
                   </tr>
                 ) : filteredRegistrations.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-8 text-center text-white/70">
+                    <td colSpan={11} className="px-6 py-8 text-center text-white/70">
                       No registrations found
                     </td>
                   </tr>
@@ -317,7 +323,18 @@ export default function AdminPage() {
                       <td className="px-6 py-4 text-white font-medium">{reg.name}</td>
                       <td className="px-6 py-4 text-white/80">{reg.email}</td>
                       <td className="px-6 py-4 text-white/80">{reg.phone}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                          reg.ticketType === "vip" 
+                            ? "bg-[#FFD700]/20 text-[#FFD700]" 
+                            : "bg-[#D4AF37]/20 text-[#D4AF37]"
+                        }`}>
+                          {reg.ticketType === "vip" ? "VIP" : "Regular"}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 text-[#D4AF37] font-semibold">{reg.guests}</td>
+                      <td className="px-6 py-4 text-white/80 capitalize">{reg.dietaryRequirement || "None"}</td>
+                      <td className="px-6 py-4 text-white/80">{reg.allergies || "-"}</td>
                       <td className="px-6 py-4">{getStatusBadge(reg.paymentStatus)}</td>
                       <td className="px-6 py-4 text-white/60 text-sm">
                         {new Date(reg.timestamp).toLocaleString()}
