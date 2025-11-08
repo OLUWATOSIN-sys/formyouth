@@ -294,6 +294,7 @@ export default function AdminPage() {
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Phone</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Ticket</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Guests</th>
+                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Amount</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Guest Names</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Diet</th>
                   <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Allergies</th>
@@ -305,13 +306,13 @@ export default function AdminPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={12} className="px-6 py-8 text-center text-white/70">
+                    <td colSpan={13} className="px-6 py-8 text-center text-white/70">
                       Loading registrations...
                     </td>
                   </tr>
                 ) : filteredRegistrations.length === 0 ? (
                   <tr>
-                    <td colSpan={12} className="px-6 py-8 text-center text-white/70">
+                    <td colSpan={13} className="px-6 py-8 text-center text-white/70">
                       No registrations found
                     </td>
                   </tr>
@@ -335,6 +336,11 @@ export default function AdminPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-[#D4AF37] font-semibold">{reg.guests}</td>
+                      <td className="px-6 py-4">
+                        <span className="text-[#FFD700] font-bold text-lg">
+                          R{(parseInt(reg.guests) * (reg.ticketType === "vip" ? 1500 : 500)).toLocaleString()}
+                        </span>
+                      </td>
                       <td className="px-6 py-4">
                         <div className="text-white/80 text-sm max-w-xs">
                           {reg.guestNames && reg.guestNames.length > 0 ? (

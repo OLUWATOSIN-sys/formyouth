@@ -206,30 +206,30 @@ export default function Home() {
         <div className="max-w-3xl w-full text-center fade-in">
           {/* Three Logos at Top */}
           <div className="flex justify-center items-center gap-4 mb-8 float-animation">
-            <div className="w-16 h-16 md:w-20 md:h-20 relative bg-white rounded-full flex items-center justify-center overflow-hidden">
+            <div className="w-16 h-16 md:w-20 md:h-20 relative bg-white rounded-full flex items-center justify-center overflow-hidden p-2">
               <Image
-                src="/logo.png"
-                alt="Logo 1"
+                src="/globe.png"
+                alt="RCCG Logo"
                 width={60}
                 height={60}
                 className="object-contain"
                 style={{ width: 'auto', height: 'auto' }}
               />
             </div>
-            <div className="w-16 h-16 md:w-20 md:h-20 relative bg-white rounded-full flex items-center justify-center overflow-hidden">
+            <div className="w-16 h-16 md:w-20 md:h-20 relative bg-white rounded-full flex items-center justify-center overflow-hidden p-2">
               <Image
-                src="/logo.png"
-                alt="Logo 2"
+                src="/galayouth.png"
+                alt="Youth Gala Logo"
                 width={60}
                 height={60}
                 className="object-contain"
                 style={{ width: 'auto', height: 'auto' }}
               />
             </div>
-            <div className="w-16 h-16 md:w-20 md:h-20 relative bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-[#D4AF37]">
+            <div className="w-16 h-16 md:w-20 md:h-20 relative bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-[#D4AF37] p-2">
               <Image
                 src="/logo.png"
-                alt="Logo 3"
+                alt="CCC Logo"
                 width={60}
                 height={60}
                 className="object-contain"
@@ -415,6 +415,7 @@ export default function Home() {
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-black/50 border-2 border-[#D4AF37]/30 rounded-lg text-white focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 transition-all"
                 >
+                  <option value="0">0 Guests (Registration Only)</option>
                   <option value="1">1 Guest</option>
                   <option value="2">2 Guests</option>
                   <option value="3">3 Guests</option>

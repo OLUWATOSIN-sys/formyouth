@@ -25,10 +25,9 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     
-    // Generate unique token for payment upload (valid for 24 hours)
+    // Generate unique token for payment upload (valid until November 20th, 2025)
     const paymentUploadToken = randomUUID();
-    const paymentUploadExpiry = new Date();
-    paymentUploadExpiry.setHours(paymentUploadExpiry.getHours() + 24);
+    const paymentUploadExpiry = new Date('2025-11-20T23:59:59');
     
     const newRegistration = {
       name: body.name,
