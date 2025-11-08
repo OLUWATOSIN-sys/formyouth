@@ -161,8 +161,10 @@ export default function UploadPaymentPage() {
           <div className="space-y-2 text-white/80">
             <p><span className="text-[#D4AF37]">Name:</span> {registrant?.name}</p>
             <p><span className="text-[#D4AF37]">Email:</span> {registrant?.email}</p>
-            <p><span className="text-[#D4AF37]">Guests:</span> {registrant?.guests}</p>
-            <p><span className="text-[#D4AF37]">Amount Due:</span> R{parseInt(registrant?.guests || "1") * 500}</p>
+            <p><span className="text-[#D4AF37]">Additional Guests:</span> {registrant?.guests}</p>
+            <p><span className="text-[#D4AF37]">Total People:</span> {(parseInt(registrant?.guests || "0") + 1)} (including you)</p>
+            <p><span className="text-[#D4AF37]">Ticket Type:</span> {registrant?.ticketType === "vip" ? "VIP" : "Regular"}</p>
+            <p><span className="text-[#D4AF37]">Amount Due:</span> <span className="text-[#FFD700] font-bold text-xl">R{((parseInt(registrant?.guests || "0") + 1) * (registrant?.ticketType === "vip" ? 1500 : 500)).toLocaleString()}</span></p>
           </div>
         </div>
 
@@ -211,7 +213,7 @@ export default function UploadPaymentPage() {
           </button>
 
           <p className="text-white/50 text-sm mt-4 text-center">
-            This link is valid for 24 hours from registration
+            ⚠️ Payment due by <span className="text-[#FFD700] font-semibold">November 20th, 2025</span>
           </p>
         </div>
       </div>
