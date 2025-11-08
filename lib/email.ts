@@ -24,7 +24,8 @@ export async function sendPaymentUploadEmail(
   ticketType: string = "regular"
 ) {
   const pricePerPerson = ticketType === "vip" ? 1500 : 500;
-  const amount = parseInt(guests) * pricePerPerson;
+  const totalPeople = parseInt(guests) + 1; // Add 1 for the registrant
+  const amount = totalPeople * pricePerPerson;
   const ticketLabel = ticketType === "vip" ? "VIP" : "Regular";
 
   const mailOptions = {
@@ -68,12 +69,13 @@ export async function sendPaymentUploadEmail(
             <div class="info-box">
               <h3 style="color: #D4AF37; margin-top: 0;">Registration Details:</h3>
               <p><strong>Ticket Type:</strong> ${ticketLabel}</p>
-              <p><strong>Number of People:</strong> ${guests} ${guests === "1" ? "person" : "people"}</p>
-              <p><strong>Price Per Person:</strong> R${pricePerPerson}</p>
+              <p><strong>Additional Guests:</strong> ${guests}</p>
+              <p><strong>Total People:</strong> ${totalPeople} ${totalPeople === 1 ? "person" : "people"} (including you)</p>
+              <p><strong>Price Per Person:</strong> R${pricePerPerson.toLocaleString()}</p>
               <p style="font-size: 18px; margin-top: 15px; padding: 10px; background: rgba(255, 215, 0, 0.1); border-left: 4px solid #FFD700;">
                 <strong>TOTAL AMOUNT TO PAY:</strong> <span style="color: #FFD700; font-size: 24px;">R${amount.toLocaleString()}</span>
               </p>
-              <p style="font-size: 12px; color: #888; margin-top: 5px;">(${guests} ${guests === "1" ? "person" : "people"} × R${pricePerPerson} per person)</p>
+              <p style="font-size: 12px; color: #888; margin-top: 5px;">(${totalPeople} ${totalPeople === 1 ? "person" : "people"} × R${pricePerPerson.toLocaleString()} per person)</p>
               <p><strong>Event Date:</strong> 29th November 2025</p>
               <p><strong>Dress Code:</strong> Royal Attire</p>
             </div>

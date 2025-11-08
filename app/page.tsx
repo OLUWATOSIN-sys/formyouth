@@ -385,7 +385,7 @@ export default function Home() {
 
               <div className="fade-in" style={{ animationDelay: "0.3s" }}>
                 <label htmlFor="guests" className="block text-[#D4AF37] font-semibold mb-2">
-                  Number of Guests *
+                  Additional Guests (Excluding Yourself) *
                 </label>
                 <select
                   id="guests"
@@ -395,24 +395,24 @@ export default function Home() {
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-black/50 border-2 border-[#D4AF37]/30 rounded-lg text-white focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 transition-all"
                 >
-                  <option value="1">Just Me (1 Person)</option>
-                  <option value="2">Me + 1 Guest (2 People)</option>
-                  <option value="3">Me + 2 Guests (3 People)</option>
-                  <option value="4">Me + 3 Guests (4 People)</option>
-                  <option value="5">Me + 4 Guests (5 People)</option>
+                  <option value="0">0 Additional Guests (Just Me)</option>
+                  <option value="1">1 Additional Guest (2 People Total)</option>
+                  <option value="2">2 Additional Guests (3 People Total)</option>
+                  <option value="3">3 Additional Guests (4 People Total)</option>
+                  <option value="4">4 Additional Guests (5 People Total)</option>
                 </select>
               </div>
 
               {/* Guest Names Section */}
               {parseInt(formData.guests) > 0 && (
                 <div className="fade-in bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-lg p-6" style={{ animationDelay: "0.35s" }}>
-                  <h3 className="text-[#D4AF37] font-bold text-lg mb-4">Guest Names</h3>
-                  <p className="text-white/70 text-sm mb-4">Please provide the full names of all guests attending (including yourself)</p>
+                  <h3 className="text-[#D4AF37] font-bold text-lg mb-4">Additional Guest Names</h3>
+                  <p className="text-white/70 text-sm mb-4">Please provide the full names of your additional guests (not including yourself)</p>
                   <div className="space-y-3">
                     {Array.from({ length: parseInt(formData.guests) }).map((_, index) => (
                       <div key={index}>
                         <label htmlFor={`guest-${index}`} className="block text-white/80 font-medium mb-1 text-sm">
-                          Guest {index + 1} {index === 0 && "(Main Registrant)"} *
+                          Guest {index + 1} *
                         </label>
                         <input
                           type="text"

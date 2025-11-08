@@ -338,7 +338,7 @@ export default function AdminPage() {
                       <td className="px-4 py-3 text-[#D4AF37] font-semibold text-sm text-center">{reg.guests}</td>
                       <td className="px-4 py-3">
                         <span className="text-[#FFD700] font-bold text-base whitespace-nowrap">
-                          R{(parseInt(reg.guests) * (reg.ticketType === "vip" ? 1500 : 500)).toLocaleString()}
+                          R{((parseInt(reg.guests) + 1) * (reg.ticketType === "vip" ? 1500 : 500)).toLocaleString()}
                         </span>
                       </td>
                       <td className="px-4 py-3">
