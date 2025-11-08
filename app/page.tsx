@@ -204,34 +204,14 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="max-w-3xl w-full text-center fade-in">
-          {/* Three Logos at Top */}
-          <div className="flex justify-center items-center gap-4 mb-8 float-animation">
-            <div className="w-16 h-16 md:w-20 md:h-20 relative bg-white rounded-full flex items-center justify-center overflow-hidden p-2">
-              <Image
-                src="/globe.png"
-                alt="RCCG Logo"
-                width={60}
-                height={60}
-                className="object-contain"
-                style={{ width: 'auto', height: 'auto' }}
-              />
-            </div>
-            <div className="w-16 h-16 md:w-20 md:h-20 relative bg-white rounded-full flex items-center justify-center overflow-hidden p-2">
-              <Image
-                src="/galayouth.png"
-                alt="Youth Gala Logo"
-                width={60}
-                height={60}
-                className="object-contain"
-                style={{ width: 'auto', height: 'auto' }}
-              />
-            </div>
-            <div className="w-16 h-16 md:w-20 md:h-20 relative bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-[#D4AF37] p-2">
+          {/* Logo at Top */}
+          <div className="flex justify-center items-center mb-8 float-animation">
+            <div className="w-20 h-20 md:w-24 md:h-24 relative bg-white rounded-full flex items-center justify-center overflow-hidden border-4 border-[#D4AF37] p-3">
               <Image
                 src="/logo.png"
                 alt="CCC Logo"
-                width={60}
-                height={60}
+                width={80}
+                height={80}
                 className="object-contain"
                 style={{ width: 'auto', height: 'auto' }}
               />
