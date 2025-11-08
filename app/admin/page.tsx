@@ -180,8 +180,17 @@ export default function AdminPage() {
     0
   );
 
+  const expectedRevenue = registrations.reduce(
+    (sum, reg) => {
+      const totalPeople = parseInt(reg.guests) + 1; // Add 1 for the registrant
+      const pricePerPerson = reg.ticketType === "vip" ? 1500 : 500;
+      return sum + (totalPeople * pricePerPerson);
+    },
+    0
+  );
+
   const paidCount = registrations.filter(
-    (r) => r.paymentStatus === "confirmed"
+    (reg) => reg.paymentStatus === "confirmed"
   ).length;
 
   if (!isAuthenticated) {
@@ -267,7 +276,7 @@ export default function AdminPage() {
           </div>
           <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-[#D4AF37] rounded-xl p-6">
             <p className="text-white/70 text-sm mb-1">Expected Revenue</p>
-            <p className="text-4xl font-bold text-[#B8941E]">R{totalGuests * 500}</p>
+            <p className="text-4xl font-bold text-[#B8941E]">R{expectedRevenue.toLocaleString()}</p>
           </div>
         </div>
 
