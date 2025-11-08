@@ -149,19 +149,19 @@ export default function AdminPage() {
     switch (status) {
       case "confirmed":
         return (
-          <span className="px-4 py-1.5 bg-green-500/20 text-green-400 rounded text-sm font-semibold">
+          <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-semibold whitespace-nowrap">
             Paid
           </span>
         );
       case "proof_uploaded":
         return (
-          <span className="px-4 py-1.5 bg-yellow-500/20 text-yellow-400 rounded text-sm font-semibold">
-            Proof Uploaded
+          <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded text-xs font-semibold whitespace-nowrap">
+            Proof Up
           </span>
         );
       default:
         return (
-          <span className="px-4 py-1.5 bg-red-500/20 text-red-400 rounded text-sm font-semibold">
+          <span className="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs font-semibold whitespace-nowrap">
             Not Paid
           </span>
         );
@@ -285,22 +285,22 @@ export default function AdminPage() {
         {/* Registrations Table */}
         <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-[#D4AF37] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full table-auto">
               <thead className="bg-[#D4AF37]/10">
                 <tr>
-                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">#</th>
-                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Name</th>
-                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Email</th>
-                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Phone</th>
-                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Ticket</th>
-                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Guests</th>
-                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Amount</th>
-                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Guest Names</th>
-                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Diet</th>
-                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Allergies</th>
-                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Status</th>
-                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Date</th>
-                  <th className="px-6 py-4 text-left text-[#D4AF37] font-semibold">Actions</th>
+                  <th className="px-3 py-4 text-left text-[#D4AF37] font-semibold text-sm w-12">#</th>
+                  <th className="px-4 py-4 text-left text-[#D4AF37] font-semibold text-sm min-w-[150px]">Name</th>
+                  <th className="px-4 py-4 text-left text-[#D4AF37] font-semibold text-sm min-w-[200px]">Email</th>
+                  <th className="px-4 py-4 text-left text-[#D4AF37] font-semibold text-sm min-w-[130px]">Phone</th>
+                  <th className="px-4 py-4 text-left text-[#D4AF37] font-semibold text-sm w-24">Ticket</th>
+                  <th className="px-4 py-4 text-center text-[#D4AF37] font-semibold text-sm w-20">Guests</th>
+                  <th className="px-4 py-4 text-left text-[#D4AF37] font-semibold text-sm w-28">Amount</th>
+                  <th className="px-4 py-4 text-left text-[#D4AF37] font-semibold text-sm min-w-[180px]">Guest Names</th>
+                  <th className="px-4 py-4 text-left text-[#D4AF37] font-semibold text-sm w-24">Diet</th>
+                  <th className="px-4 py-4 text-left text-[#D4AF37] font-semibold text-sm w-28">Allergies</th>
+                  <th className="px-4 py-4 text-left text-[#D4AF37] font-semibold text-sm w-28">Status</th>
+                  <th className="px-4 py-4 text-left text-[#D4AF37] font-semibold text-sm min-w-[140px]">Date</th>
+                  <th className="px-4 py-4 text-left text-[#D4AF37] font-semibold text-sm w-32">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -322,12 +322,12 @@ export default function AdminPage() {
                       key={reg._id}
                       className="border-t border-[#D4AF37]/20 hover:bg-[#D4AF37]/5 transition-colors"
                     >
-                      <td className="px-6 py-4 text-white">{index + 1}</td>
-                      <td className="px-6 py-4 text-white font-medium">{reg.name}</td>
-                      <td className="px-6 py-4 text-white/80">{reg.email}</td>
-                      <td className="px-6 py-4 text-white/80">{reg.phone}</td>
-                      <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                      <td className="px-3 py-3 text-white text-sm">{index + 1}</td>
+                      <td className="px-4 py-3 text-white font-medium text-sm">{reg.name}</td>
+                      <td className="px-4 py-3 text-white/80 text-sm">{reg.email}</td>
+                      <td className="px-4 py-3 text-white/80 text-sm">{reg.phone}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ${
                           reg.ticketType === "vip" 
                             ? "bg-[#FFD700]/20 text-[#FFD700]" 
                             : "bg-[#D4AF37]/20 text-[#D4AF37]"
@@ -335,14 +335,14 @@ export default function AdminPage() {
                           {reg.ticketType === "vip" ? "VIP" : "Regular"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-[#D4AF37] font-semibold">{reg.guests}</td>
-                      <td className="px-6 py-4">
-                        <span className="text-[#FFD700] font-bold text-lg">
+                      <td className="px-4 py-3 text-[#D4AF37] font-semibold text-sm text-center">{reg.guests}</td>
+                      <td className="px-4 py-3">
+                        <span className="text-[#FFD700] font-bold text-base whitespace-nowrap">
                           R{(parseInt(reg.guests) * (reg.ticketType === "vip" ? 1500 : 500)).toLocaleString()}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-white/80 text-sm max-w-xs">
+                      <td className="px-4 py-3">
+                        <div className="text-white/80 text-xs max-w-[180px]">
                           {reg.guestNames && reg.guestNames.length > 0 ? (
                             <div className="space-y-1">
                               {reg.guestNames.filter(name => name.trim()).map((name, idx) => (
@@ -357,27 +357,33 @@ export default function AdminPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-white/80 capitalize">{reg.dietaryRequirement || "None"}</td>
-                      <td className="px-6 py-4 text-white/80">{reg.allergies || "-"}</td>
-                      <td className="px-6 py-4">{getStatusBadge(reg.paymentStatus)}</td>
-                      <td className="px-6 py-4 text-white/60 text-sm">
-                        {new Date(reg.timestamp).toLocaleString()}
+                      <td className="px-4 py-3 text-white/80 capitalize text-xs">{reg.dietaryRequirement || "None"}</td>
+                      <td className="px-4 py-3 text-white/80 text-xs">{reg.allergies || "-"}</td>
+                      <td className="px-4 py-3">{getStatusBadge(reg.paymentStatus)}</td>
+                      <td className="px-4 py-3 text-white/60 text-xs whitespace-nowrap">
+                        {new Date(reg.timestamp).toLocaleDateString('en-ZA', { 
+                          year: 'numeric', 
+                          month: '2-digit', 
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex gap-2">
+                      <td className="px-4 py-3">
+                        <div className="flex gap-1 flex-wrap">
                           {reg.paymentStatus === "proof_uploaded" && reg.proofOfPayment && (
                             <>
                               <button
                                 onClick={() => viewProof(reg.proofOfPayment!)}
-                                className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 text-sm"
+                                className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 text-xs whitespace-nowrap"
                                 title="View Proof"
                               >
-                                👁️ View
+                                👁️
                               </button>
                               <button
                                 onClick={() => handleConfirmPayment(reg._id)}
                                 disabled={actionLoading === `confirm-${reg._id}`}
-                                className="px-3 py-1 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                                className="px-2 py-1 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 whitespace-nowrap"
                                 title="Confirm Payment"
                               >
                                 {actionLoading === `confirm-${reg._id}` ? (
@@ -388,7 +394,7 @@ export default function AdminPage() {
                                     </svg>
                                   </>
                                 ) : (
-                                  "✓ Confirm"
+                                  "✓"
                                 )}
                               </button>
                             </>
@@ -396,7 +402,7 @@ export default function AdminPage() {
                           <button
                             onClick={() => handleDeleteRegistration(reg._id)}
                             disabled={actionLoading === `delete-${reg._id}`}
-                            className="px-3 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                            className="px-2 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 whitespace-nowrap"
                             title="Delete"
                           >
                             {actionLoading === `delete-${reg._id}` ? (
