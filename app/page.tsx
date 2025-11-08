@@ -395,12 +395,11 @@ export default function Home() {
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-black/50 border-2 border-[#D4AF37]/30 rounded-lg text-white focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 transition-all"
                 >
-                  <option value="0">0 Guests (Registration Only)</option>
-                  <option value="1">1 Guest</option>
-                  <option value="2">2 Guests</option>
-                  <option value="3">3 Guests</option>
-                  <option value="4">4 Guests</option>
-                  <option value="5">5 Guests</option>
+                  <option value="1">Just Me (1 Person)</option>
+                  <option value="2">Me + 1 Guest (2 People)</option>
+                  <option value="3">Me + 2 Guests (3 People)</option>
+                  <option value="4">Me + 3 Guests (4 People)</option>
+                  <option value="5">Me + 4 Guests (5 People)</option>
                 </select>
               </div>
 

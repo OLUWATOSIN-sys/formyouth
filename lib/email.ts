@@ -68,26 +68,20 @@ export async function sendPaymentUploadEmail(
             <div class="info-box">
               <h3 style="color: #D4AF37; margin-top: 0;">Registration Details:</h3>
               <p><strong>Ticket Type:</strong> ${ticketLabel}</p>
-              <p><strong>Number of Guests:</strong> ${guests}${guests === "0" ? " (Registration Only)" : ""}</p>
+              <p><strong>Number of People:</strong> ${guests} ${guests === "1" ? "person" : "people"}</p>
               <p><strong>Price Per Person:</strong> R${pricePerPerson}</p>
               <p style="font-size: 18px; margin-top: 15px; padding: 10px; background: rgba(255, 215, 0, 0.1); border-left: 4px solid #FFD700;">
-                <strong>TOTAL AMOUNT TO PAY:</strong> ${amount === 0 ? '<span style="color: #FFD700;">R0 (No Payment Required)</span>' : `<span style="color: #FFD700; font-size: 24px;">R${amount.toLocaleString()}</span>`}
+                <strong>TOTAL AMOUNT TO PAY:</strong> <span style="color: #FFD700; font-size: 24px;">R${amount.toLocaleString()}</span>
               </p>
-              <p style="font-size: 12px; color: #888; margin-top: 5px;">(${guests} ${guests === "1" ? "guest" : "guests"} × R${pricePerPerson} per person)</p>
+              <p style="font-size: 12px; color: #888; margin-top: 5px;">(${guests} ${guests === "1" ? "person" : "people"} × R${pricePerPerson} per person)</p>
               <p><strong>Event Date:</strong> 29th November 2025</p>
               <p><strong>Dress Code:</strong> Royal Attire</p>
             </div>
             
-            ${guests !== "0" ? `
             <h3 style="color: #D4AF37;">Next Step: Upload Proof of Payment</h3>
             
-            <p>To complete your registration, please make your payment and upload proof using the link below:</p>` : `
-            <h3 style="color: #D4AF37;">Registration Confirmed</h3>
+            <p>To complete your registration, please make your payment and upload proof using the link below:</p>
             
-            <p>You have registered for updates about the event. No payment is required at this time.</p>
-            <p>If you decide to attend, you can update your registration later.</p>`}
-            
-            ${guests !== "0" ? `
             <div style="text-align: center;">
               <a href="${uploadLink}" class="button">UPLOAD PROOF OF PAYMENT</a>
             </div>
@@ -107,7 +101,6 @@ export async function sendPaymentUploadEmail(
             </div>
             
             <p>After making payment, click the button above to upload your proof of payment (bank receipt or screenshot).</p>
-            ` : ''}
             
             <h3 style="color: #D4AF37; margin-top: 40px;">Need Style Inspiration?</h3>
             <p>Check out our Royal Attire Moodboard for outfit ideas!</p>
