@@ -10,7 +10,7 @@ interface Registration {
   phone: string;
   guests: string;
   guestNames: string[];
-  ticketType: "vip" | "regular";
+  ticketType: "vip" | "regular" | "vip-plus";
   dietaryRequirement: string;
   allergies: string;
   timestamp: string;
@@ -29,6 +29,7 @@ export default function AdminPage() {
   const [selectedProof, setSelectedProof] = useState<string | null>(null);
   const [showProofModal, setShowProofModal] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [ticketFilter, setTicketFilter] = useState<"all" | "regular" | "vip" | "vip-plus">("all");
 
   const ADMIN_PASSWORD = "YouthGala2025!";
   const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 minutes
@@ -169,10 +170,13 @@ export default function AdminPage() {
   };
 
   const filteredRegistrations = registrations.filter(
-    (reg) =>
-      reg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      reg.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      reg.phone.includes(searchTerm)
+    (reg) => {
+      const matchesSearch = reg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reg.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reg.phone.includes(searchTerm);
+      const matchesFilter = ticketFilter === "all" || reg.ticketType === ticketFilter;
+      return matchesSearch && matchesFilter;
+    }
   );
 
   const totalGuests = registrations.reduce(
@@ -183,7 +187,7 @@ export default function AdminPage() {
   const expectedRevenue = registrations.reduce(
     (sum, reg) => {
       const totalPeople = parseInt(reg.guests) + 1; // Add 1 for the registrant
-      const pricePerPerson = reg.ticketType === "vip" ? 1500 : 500;
+      const pricePerPerson = reg.ticketType === "vip" ? 1500 : reg.ticketType === "vip-plus" ? 2000 : 500;
       return sum + (totalPeople * pricePerPerson);
     },
     0
@@ -192,6 +196,10 @@ export default function AdminPage() {
   const paidCount = registrations.filter(
     (reg) => reg.paymentStatus === "confirmed"
   ).length;
+
+  const regularCount = registrations.filter((reg) => reg.ticketType === "regular").length;
+  const vipCount = registrations.filter((reg) => reg.ticketType === "vip").length;
+  const vipPlusCount = registrations.filter((reg) => reg.ticketType === "vip-plus").length;
 
   if (!isAuthenticated) {
     return (
@@ -280,8 +288,71 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Search Bar */}
+        {/* Ticket Type Breakdown */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-[#D4AF37] rounded-xl p-6">
+            <p className="text-white/70 text-sm mb-1">Regular Tickets</p>
+            <p className="text-3xl font-bold text-[#D4AF37]">{regularCount}</p>
+            <p className="text-white/50 text-xs mt-1">R500 per person</p>
+          </div>
+          <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-[#FFD700] rounded-xl p-6">
+            <p className="text-white/70 text-sm mb-1">VIP Tickets</p>
+            <p className="text-3xl font-bold text-[#FFD700]">{vipCount}</p>
+            <p className="text-white/50 text-xs mt-1">R1500 per person</p>
+          </div>
+          <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-[#FF6B35] rounded-xl p-6">
+            <p className="text-white/70 text-sm mb-1">VIP Plus-One Tickets</p>
+            <p className="text-3xl font-bold text-[#FF6B35]">{vipPlusCount}</p>
+            <p className="text-white/50 text-xs mt-1">R2000 per person</p>
+          </div>
+        </div>
+
+        {/* Filter Buttons */}
         <div className="mb-6">
+          <div className="flex flex-wrap gap-3 mb-4">
+            <button
+              onClick={() => setTicketFilter("all")}
+              className={`px-6 py-2 rounded-lg font-semibold transition-all ${
+                ticketFilter === "all"
+                  ? "bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] text-black"
+                  : "bg-zinc-800 text-white/70 hover:bg-zinc-700"
+              }`}
+            >
+              All Tickets ({registrations.length})
+            </button>
+            <button
+              onClick={() => setTicketFilter("regular")}
+              className={`px-6 py-2 rounded-lg font-semibold transition-all ${
+                ticketFilter === "regular"
+                  ? "bg-[#D4AF37] text-black"
+                  : "bg-zinc-800 text-[#D4AF37] hover:bg-zinc-700 border border-[#D4AF37]/30"
+              }`}
+            >
+              Regular ({regularCount})
+            </button>
+            <button
+              onClick={() => setTicketFilter("vip")}
+              className={`px-6 py-2 rounded-lg font-semibold transition-all ${
+                ticketFilter === "vip"
+                  ? "bg-[#FFD700] text-black"
+                  : "bg-zinc-800 text-[#FFD700] hover:bg-zinc-700 border border-[#FFD700]/30"
+              }`}
+            >
+              VIP ({vipCount})
+            </button>
+            <button
+              onClick={() => setTicketFilter("vip-plus")}
+              className={`px-6 py-2 rounded-lg font-semibold transition-all ${
+                ticketFilter === "vip-plus"
+                  ? "bg-[#FF6B35] text-black"
+                  : "bg-zinc-800 text-[#FF6B35] hover:bg-zinc-700 border border-[#FF6B35]/30"
+              }`}
+            >
+              VIP Plus-One ({vipPlusCount})
+            </button>
+          </div>
+
+          {/* Search Bar */}
           <input
             type="text"
             placeholder="Search by name, email, or phone..."
@@ -339,15 +410,17 @@ export default function AdminPage() {
                         <span className={`px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ${
                           reg.ticketType === "vip" 
                             ? "bg-[#FFD700]/20 text-[#FFD700]" 
+                            : reg.ticketType === "vip-plus"
+                            ? "bg-[#FF6B35]/20 text-[#FF6B35]"
                             : "bg-[#D4AF37]/20 text-[#D4AF37]"
                         }`}>
-                          {reg.ticketType === "vip" ? "VIP" : "Regular"}
+                          {reg.ticketType === "vip" ? "VIP" : reg.ticketType === "vip-plus" ? "VIP+" : "Regular"}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-[#D4AF37] font-semibold text-sm text-center">{reg.guests}</td>
                       <td className="px-4 py-3">
                         <span className="text-[#FFD700] font-bold text-base whitespace-nowrap">
-                          R{((parseInt(reg.guests) + 1) * (reg.ticketType === "vip" ? 1500 : 500)).toLocaleString()}
+                          R{((parseInt(reg.guests) + 1) * (reg.ticketType === "vip" ? 1500 : reg.ticketType === "vip-plus" ? 2000 : 500)).toLocaleString()}
                         </span>
                       </td>
                       <td className="px-4 py-3">
@@ -384,10 +457,13 @@ export default function AdminPage() {
                             <>
                               <button
                                 onClick={() => viewProof(reg.proofOfPayment!)}
-                                className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 text-xs whitespace-nowrap"
+                                className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 text-xs whitespace-nowrap flex items-center justify-center"
                                 title="View Proof"
                               >
-                                👁️
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
                               </button>
                               <button
                                 onClick={() => handleConfirmPayment(reg._id)}
@@ -403,7 +479,9 @@ export default function AdminPage() {
                                     </svg>
                                   </>
                                 ) : (
-                                  "✓"
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
                                 )}
                               </button>
                             </>
@@ -420,7 +498,9 @@ export default function AdminPage() {
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                               </svg>
                             ) : (
-                              "🗑️"
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
                             )}
                           </button>
                         </div>
@@ -438,15 +518,23 @@ export default function AdminPage() {
           <button
             onClick={() => {
               const csv = [
-                ["Name", "Email", "Phone", "Guests", "Payment Status", "Date"],
-                ...registrations.map((reg) => [
-                  reg.name,
-                  reg.email,
-                  reg.phone,
-                  reg.guests,
-                  reg.paymentStatus,
-                  new Date(reg.timestamp).toLocaleString(),
-                ]),
+                ["Name", "Email", "Phone", "Ticket Type", "Guests", "Amount", "Payment Status", "Date"],
+                ...registrations.map((reg) => {
+                  const totalPeople = parseInt(reg.guests) + 1;
+                  const pricePerPerson = reg.ticketType === "vip" ? 1500 : reg.ticketType === "vip-plus" ? 2000 : 500;
+                  const amount = totalPeople * pricePerPerson;
+                  const ticketLabel = reg.ticketType === "vip" ? "VIP" : reg.ticketType === "vip-plus" ? "VIP Plus-One" : "Regular";
+                  return [
+                    reg.name,
+                    reg.email,
+                    reg.phone,
+                    ticketLabel,
+                    reg.guests,
+                    `R${amount.toLocaleString()}`,
+                    reg.paymentStatus,
+                    new Date(reg.timestamp).toLocaleString(),
+                  ];
+                }),
               ]
                 .map((row) => row.join(","))
                 .join("\n");

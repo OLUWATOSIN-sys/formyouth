@@ -51,7 +51,7 @@ export default function Home() {
     });
   };
 
-  const handleTicketSelection = (type: "vip" | "regular") => {
+  const handleTicketSelection = (type: "vip" | "regular" | "vip-plus") => {
     setFormData({
       ...formData,
       ticketType: type,
@@ -160,37 +160,117 @@ export default function Home() {
             </h2>
 
             {/* Ticket Selection Cards */}
-            <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 px-4">
+            <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-6 px-4">
               {/* Regular Ticket */}
-              <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-[#D4AF37] rounded-2xl p-8 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-[#D4AF37]/50">
-                <h3 className="text-2xl md:text-3xl font-bold text-[#D4AF37] mb-4">REGULAR</h3>
-                <div className="mb-8">
-                  <span className="text-5xl md:text-6xl font-bold text-white">R500</span>
-                  <p className="text-white/70 mt-2">per person</p>
+              <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-[#D4AF37] rounded-2xl p-6 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-[#D4AF37]/50">
+                <h3 className="text-2xl font-bold text-[#D4AF37] mb-3">REGULAR</h3>
+                <div className="mb-4">
+                  <span className="text-4xl md:text-5xl font-bold text-white">R500</span>
+                  <p className="text-white/70 mt-1 text-sm">per person</p>
                 </div>
+                <ul className="text-white/80 space-y-2 mb-6 text-sm min-h-[200px]">
+                  <li className="flex items-start">
+                    <span className="text-[#D4AF37] mr-2">✓</span>
+                    <span>Reserved Seat</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-[#D4AF37] mr-2">✓</span>
+                    <span>Photo Session</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-[#D4AF37] mr-2">✓</span>
+                    <span>Full Access to the event and dinner</span>
+                  </li>
+                </ul>
                 <button
                   onClick={() => handleTicketSelection("regular")}
-                  className="w-full py-4 px-8 bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] text-black font-bold text-lg rounded-lg hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-[#D4AF37]/50"
+                  className="w-full py-3 px-6 bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] text-black font-bold text-base rounded-lg hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-[#D4AF37]/50"
                 >
                   SELECT REGULAR
                 </button>
               </div>
 
               {/* VIP Ticket */}
-              <div className="bg-gradient-to-br from-zinc-900 to-black border-4 border-[#FFD700] rounded-2xl p-8 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-[#FFD700]/50 relative">
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] text-black px-6 py-2 rounded-full font-bold text-sm">
+              <div className="bg-gradient-to-br from-zinc-900 to-black border-4 border-[#FFD700] rounded-2xl p-6 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-[#FFD700]/50 relative">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#B8941E] via-[#D4AF37] to-[#FFD700] text-black px-6 py-2 rounded-full font-bold text-xs">
                   PREMIUM
                 </div>
-                <h3 className="text-2xl md:text-3xl font-bold text-[#FFD700] mb-4 mt-4">VIP</h3>
-                <div className="mb-8">
-                  <span className="text-5xl md:text-6xl font-bold text-white">R1500</span>
-                  <p className="text-white/70 mt-2">per person</p>
+                <h3 className="text-2xl font-bold text-[#FFD700] mb-3 mt-4">VIP</h3>
+                <div className="mb-4">
+                  <span className="text-4xl md:text-5xl font-bold text-white">R1500</span>
+                  <p className="text-white/70 mt-1 text-sm">per person</p>
                 </div>
+                <ul className="text-white/80 space-y-2 mb-6 text-sm min-h-[200px]">
+                  <li className="flex items-start">
+                    <span className="text-[#FFD700] mr-2">✓</span>
+                    <span>Official Sponsor of 2025 Dinner</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-[#FFD700] mr-2">✓</span>
+                    <span>1+ Reserved Seat</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-[#FFD700] mr-2">✓</span>
+                    <span>Business advert placement on Screen</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-[#FFD700] mr-2">✓</span>
+                    <span>Private photo session to be delivered in the night</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-[#FFD700] mr-2">✓</span>
+                    <span>Full Access to the event and dinner</span>
+                  </li>
+                </ul>
                 <button
                   onClick={() => handleTicketSelection("vip")}
-                  className="w-full py-4 px-8 bg-gradient-to-r from-[#FFD700] via-[#D4AF37] to-[#B8941E] text-black font-bold text-lg rounded-lg hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-[#FFD700]/50"
+                  className="w-full py-3 px-6 bg-gradient-to-r from-[#FFD700] via-[#D4AF37] to-[#B8941E] text-black font-bold text-base rounded-lg hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-[#FFD700]/50"
                 >
                   SELECT VIP
+                </button>
+              </div>
+
+              {/* VIP Plus-One Package */}
+              <div className="bg-gradient-to-br from-zinc-900 to-black border-4 border-[#FF6B35] rounded-2xl p-6 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-[#FF6B35]/50 relative">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#FF6B35] via-[#FFD700] to-[#FF6B35] text-black px-6 py-2 rounded-full font-bold text-xs">
+                  EXCLUSIVE
+                </div>
+                <h3 className="text-xl font-bold text-[#FF6B35] mb-2 mt-4">VIP PLUS-ONE</h3>
+                <div className="mb-4">
+                  <span className="text-4xl md:text-5xl font-bold text-white">R2000</span>
+                  <p className="text-white/70 mt-1 text-sm">per person</p>
+                </div>
+                <ul className="text-white/80 space-y-2 mb-6 text-sm min-h-[200px]">
+                  <li className="flex items-start">
+                    <span className="text-[#FF6B35] mr-2">✓</span>
+                    <span>Official Sponsor of 2025 Dinner</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-[#FF6B35] mr-2">✓</span>
+                    <span>Designed for Couples or those attending with a date</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-[#FF6B35] mr-2">✓</span>
+                    <span>2+ Reserved Seats</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-[#FF6B35] mr-2">✓</span>
+                    <span>Business advert placement on Screen</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-[#FF6B35] mr-2">✓</span>
+                    <span>Joint private photo session to be delivered in the night</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-[#FF6B35] mr-2">✓</span>
+                    <span>Full Access to the event and dinner</span>
+                  </li>
+                </ul>
+                <button
+                  onClick={() => handleTicketSelection("vip-plus")}
+                  className="w-full py-3 px-6 bg-gradient-to-r from-[#FF6B35] via-[#FFD700] to-[#FF6B35] text-black font-bold text-base rounded-lg hover:scale-105 transform transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-[#FF6B35]/50"
+                >
+                  SELECT VIP PLUS-ONE
                 </button>
               </div>
             </div>
@@ -329,7 +409,7 @@ export default function Home() {
             <div className="text-center mb-8 p-4 bg-gradient-to-r from-[#B8941E]/20 via-[#D4AF37]/20 to-[#FFD700]/20 border border-[#D4AF37] rounded-lg">
               <p className="text-white/70 text-sm mb-1">Selected Ticket:</p>
               <p className="text-2xl font-bold gold-shimmer">
-                {formData.ticketType === "vip" ? "VIP - R1500" : "REGULAR - R500"}
+                {formData.ticketType === "vip" ? "VIP - R1500" : formData.ticketType === "vip-plus" ? "VIP PLUS-ONE - R2000" : "REGULAR - R500"}
               </p>
               <p className="text-white/60 text-sm mt-1">per person</p>
             </div>

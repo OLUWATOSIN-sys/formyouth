@@ -33,6 +33,7 @@ export async function GET(
         name: registrant.name,
         email: registrant.email,
         guests: registrant.guests,
+        ticketType: registrant.ticketType,
         paymentStatus: registrant.paymentStatus,
       },
     });

@@ -163,8 +163,8 @@ export default function UploadPaymentPage() {
             <p><span className="text-[#D4AF37]">Email:</span> {registrant?.email}</p>
             <p><span className="text-[#D4AF37]">Additional Guests:</span> {registrant?.guests}</p>
             <p><span className="text-[#D4AF37]">Total People:</span> {(parseInt(registrant?.guests || "0") + 1)} (including you)</p>
-            <p><span className="text-[#D4AF37]">Ticket Type:</span> {registrant?.ticketType === "vip" ? "VIP" : "Regular"}</p>
-            <p><span className="text-[#D4AF37]">Amount Due:</span> <span className="text-[#FFD700] font-bold text-xl">R{((parseInt(registrant?.guests || "0") + 1) * (registrant?.ticketType === "vip" ? 1500 : 500)).toLocaleString()}</span></p>
+            <p><span className="text-[#D4AF37]">Ticket Type:</span> {registrant?.ticketType === "vip" ? "VIP" : registrant?.ticketType === "vip-plus" ? "VIP Plus-One" : "Regular"}</p>
+            <p><span className="text-[#D4AF37]">Amount Due:</span> <span className="text-[#FFD700] font-bold text-xl">R{((parseInt(registrant?.guests || "0") + 1) * (registrant?.ticketType === "vip" ? 1500 : registrant?.ticketType === "vip-plus" ? 2000 : 500)).toLocaleString()}</span></p>
           </div>
         </div>
 

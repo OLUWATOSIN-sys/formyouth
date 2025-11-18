@@ -23,10 +23,10 @@ export async function sendPaymentUploadEmail(
   guests: string,
   ticketType: string = "regular"
 ) {
-  const pricePerPerson = ticketType === "vip" ? 1500 : 500;
+  const pricePerPerson = ticketType === "vip" ? 1500 : ticketType === "vip-plus" ? 2000 : 500;
   const totalPeople = parseInt(guests) + 1; // Add 1 for the registrant
   const amount = totalPeople * pricePerPerson;
-  const ticketLabel = ticketType === "vip" ? "VIP" : "Regular";
+  const ticketLabel = ticketType === "vip" ? "VIP" : ticketType === "vip-plus" ? "VIP Plus-One" : "Regular";
 
   const mailOptions = {
     from: `"Youth Gala 2025" <rccggala@gmail.com>`,
