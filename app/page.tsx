@@ -507,18 +507,18 @@ export default function Home() {
               {parseInt(formData.guests) > 0 && (
                 <div className={`fade-in ${formData.ticketType === "vip-plus" ? "bg-[#FF6B35]/10 border-[#FF6B35]/30" : "bg-[#D4AF37]/10 border-[#D4AF37]/30"} border rounded-lg p-6`} style={{ animationDelay: "0.35s" }}>
                   <h3 className={`${formData.ticketType === "vip-plus" ? "text-[#FF6B35]" : "text-[#D4AF37]"} font-bold text-lg mb-4`}>
-                    {formData.ticketType === "vip-plus" ? "Plus One Name" : "Additional Guest Names"}
+                    {formData.ticketType === "vip-plus" ? "Enter Full Name" : "Additional Guest Names"}
                   </h3>
                   <p className="text-white/70 text-sm mb-4">
                     {formData.ticketType === "vip-plus" 
-                      ? "Please provide the full name of your Plus One" 
+                      ? "Please provide the full name" 
                       : "Please provide the full names of your additional guests (not including yourself)"}
                   </p>
                   <div className="space-y-3">
                     {Array.from({ length: parseInt(formData.guests) }).map((_, index) => (
                       <div key={index}>
                         <label htmlFor={`guest-${index}`} className="block text-white/80 font-medium mb-1 text-sm">
-                          {formData.ticketType === "vip-plus" ? "Plus One Full Name *" : `Guest ${index + 1} *`}
+                          {formData.ticketType === "vip-plus" ? "Full Name *" : `Guest ${index + 1} *`}
                         </label>
                         <input
                           type="text"
@@ -527,7 +527,7 @@ export default function Home() {
                           value={formData.guestNames[index]}
                           onChange={(e) => handleGuestNameChange(index, e.target.value)}
                           className={`w-full px-4 py-2.5 bg-black/50 border-2 ${formData.ticketType === "vip-plus" ? "border-[#FF6B35]/30 focus:border-[#FF6B35] focus:ring-[#FF6B35]/50" : "border-[#D4AF37]/30 focus:border-[#D4AF37] focus:ring-[#D4AF37]/50"} rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-all`}
-                          placeholder={formData.ticketType === "vip-plus" ? "Enter Plus One's full name" : "Full Name"}
+                          placeholder={formData.ticketType === "vip-plus" ? "Enter full name" : "Full Name"}
                         />
                       </div>
                     ))}
