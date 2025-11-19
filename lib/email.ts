@@ -23,9 +23,13 @@ export async function sendPaymentUploadEmail(
   guests: string,
   ticketType: string = "regular"
 ) {
-  const pricePerPerson = ticketType === "vip" ? 1500 : ticketType === "vip-plus" ? 2000 : 500;
-  const totalPeople = parseInt(guests) + 1; // Add 1 for the registrant
-  const amount = totalPeople * pricePerPerson;
+  // VIP Plus-One is a flat R2000 for 2 people (registrant + plus one)
+  // Other tickets are calculated per person
+  const amount = ticketType === "vip-plus" 
+    ? 2000 // Flat rate for VIP Plus-One (always 2 people)
+    : (parseInt(guests) + 1) * (ticketType === "vip" ? 1500 : 500); // Regular and VIP calculated per person
+  
+  const totalPeople = ticketType === "vip-plus" ? 2 : parseInt(guests) + 1;
   const ticketLabel = ticketType === "vip" ? "VIP" : ticketType === "vip-plus" ? "VIP Plus-One" : "Regular";
 
   const mailOptions = {
@@ -69,13 +73,18 @@ export async function sendPaymentUploadEmail(
             <div class="info-box">
               <h3 style="color: #D4AF37; margin-top: 0;">Registration Details:</h3>
               <p><strong>Ticket Type:</strong> ${ticketLabel}</p>
-              <p><strong>Additional Guests:</strong> ${guests}</p>
-              <p><strong>Total People:</strong> ${totalPeople} ${totalPeople === 1 ? "person" : "people"} (including you)</p>
-              <p><strong>Price Per Person:</strong> R${pricePerPerson.toLocaleString()}</p>
+              ${ticketType === "vip-plus" 
+                ? `<p><strong>Package:</strong> You + 1 Plus One (2 People Total)</p>` 
+                : `<p><strong>Additional Guests:</strong> ${guests}</p>
+                   <p><strong>Total People:</strong> ${totalPeople} ${totalPeople === 1 ? "person" : "people"} (including you)</p>`
+              }
               <p style="font-size: 18px; margin-top: 15px; padding: 10px; background: rgba(255, 215, 0, 0.1); border-left: 4px solid #FFD700;">
                 <strong>TOTAL AMOUNT TO PAY:</strong> <span style="color: #FFD700; font-size: 24px;">R${amount.toLocaleString()}</span>
               </p>
-              <p style="font-size: 12px; color: #888; margin-top: 5px;">(${totalPeople} ${totalPeople === 1 ? "person" : "people"} × R${pricePerPerson.toLocaleString()} per person)</p>
+              ${ticketType === "vip-plus" 
+                ? `<p style="font-size: 12px; color: #888; margin-top: 5px;">(Fixed rate for 2 people)</p>` 
+                : `<p style="font-size: 12px; color: #888; margin-top: 5px;">(${totalPeople} ${totalPeople === 1 ? "person" : "people"} × R${(amount / totalPeople).toLocaleString()} per person)</p>`
+              }
               <p><strong>Event Date:</strong> 29th November 2025</p>
               <p><strong>Dress Code:</strong> Royal Attire</p>
             </div>

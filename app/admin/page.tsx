@@ -186,8 +186,13 @@ export default function AdminPage() {
 
   const expectedRevenue = registrations.reduce(
     (sum, reg) => {
-      const totalPeople = parseInt(reg.guests) + 1; // Add 1 for the registrant
-      const pricePerPerson = reg.ticketType === "vip" ? 1500 : reg.ticketType === "vip-plus" ? 2000 : 500;
+      // VIP Plus-One is a flat R2000 for 2 people (registrant + plus one)
+      if (reg.ticketType === "vip-plus") {
+        return sum + 2000;
+      }
+      // Regular and VIP are calculated per person
+      const totalPeople = parseInt(reg.guests) + 1;
+      const pricePerPerson = reg.ticketType === "vip" ? 1500 : 500;
       return sum + (totalPeople * pricePerPerson);
     },
     0
@@ -303,7 +308,7 @@ export default function AdminPage() {
           <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-[#FF6B35] rounded-xl p-6">
             <p className="text-white/70 text-sm mb-1">VIP Plus-One Tickets</p>
             <p className="text-3xl font-bold text-[#FF6B35]">{vipPlusCount}</p>
-            <p className="text-white/50 text-xs mt-1">R2000 per person</p>
+            <p className="text-white/50 text-xs mt-1">R2000 for 2 people</p>
           </div>
         </div>
 
@@ -420,7 +425,10 @@ export default function AdminPage() {
                       <td className="px-4 py-3 text-[#D4AF37] font-semibold text-sm text-center">{reg.guests}</td>
                       <td className="px-4 py-3">
                         <span className="text-[#FFD700] font-bold text-base whitespace-nowrap">
-                          R{((parseInt(reg.guests) + 1) * (reg.ticketType === "vip" ? 1500 : reg.ticketType === "vip-plus" ? 2000 : 500)).toLocaleString()}
+                          R{(reg.ticketType === "vip-plus" 
+                            ? 2000 
+                            : (parseInt(reg.guests) + 1) * (reg.ticketType === "vip" ? 1500 : 500)
+                          ).toLocaleString()}
                         </span>
                       </td>
                       <td className="px-4 py-3">
@@ -453,38 +461,40 @@ export default function AdminPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex gap-1 flex-wrap">
+                          {/* Show View Proof button if proof exists, regardless of status */}
+                          {reg.proofOfPayment && (
+                            <button
+                              onClick={() => viewProof(reg.proofOfPayment!)}
+                              className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 text-xs whitespace-nowrap flex items-center justify-center"
+                              title="View Proof of Payment"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                            </button>
+                          )}
+                          {/* Show Confirm button only for proof_uploaded status */}
                           {reg.paymentStatus === "proof_uploaded" && reg.proofOfPayment && (
-                            <>
-                              <button
-                                onClick={() => viewProof(reg.proofOfPayment!)}
-                                className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 text-xs whitespace-nowrap flex items-center justify-center"
-                                title="View Proof"
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                              </button>
-                              <button
-                                onClick={() => handleConfirmPayment(reg._id)}
-                                disabled={actionLoading === `confirm-${reg._id}`}
-                                className="px-2 py-1 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 whitespace-nowrap"
-                                title="Confirm Payment"
-                              >
-                                {actionLoading === `confirm-${reg._id}` ? (
-                                  <>
-                                    <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                  </>
-                                ) : (
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            <button
+                              onClick={() => handleConfirmPayment(reg._id)}
+                              disabled={actionLoading === `confirm-${reg._id}`}
+                              className="px-2 py-1 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 whitespace-nowrap"
+                              title="Confirm Payment"
+                            >
+                              {actionLoading === `confirm-${reg._id}` ? (
+                                <>
+                                  <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                   </svg>
-                                )}
-                              </button>
-                            </>
+                                </>
+                              ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </button>
                           )}
                           <button
                             onClick={() => handleDeleteRegistration(reg._id)}
@@ -520,9 +530,10 @@ export default function AdminPage() {
               const csv = [
                 ["Name", "Email", "Phone", "Ticket Type", "Guests", "Amount", "Payment Status", "Date"],
                 ...registrations.map((reg) => {
-                  const totalPeople = parseInt(reg.guests) + 1;
-                  const pricePerPerson = reg.ticketType === "vip" ? 1500 : reg.ticketType === "vip-plus" ? 2000 : 500;
-                  const amount = totalPeople * pricePerPerson;
+                  // VIP Plus-One is flat R2000, others calculated per person
+                  const amount = reg.ticketType === "vip-plus" 
+                    ? 2000 
+                    : (parseInt(reg.guests) + 1) * (reg.ticketType === "vip" ? 1500 : 500);
                   const ticketLabel = reg.ticketType === "vip" ? "VIP" : reg.ticketType === "vip-plus" ? "VIP Plus-One" : "Regular";
                   return [
                     reg.name,

@@ -55,6 +55,8 @@ export default function Home() {
     setFormData({
       ...formData,
       ticketType: type,
+      // For VIP+ONE, automatically set guests to 1 (the plus one)
+      guests: type === "vip-plus" ? "1" : formData.guests,
     });
     setShowLanding(false);
   };
@@ -463,36 +465,60 @@ export default function Home() {
                 />
               </div>
 
-              <div className="fade-in" style={{ animationDelay: "0.3s" }}>
-                <label htmlFor="guests" className="block text-[#D4AF37] font-semibold mb-2">
-                  Additional Guests (Excluding Yourself) *
-                </label>
-                <select
-                  id="guests"
-                  name="guests"
-                  required
-                  value={formData.guests}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-black/50 border-2 border-[#D4AF37]/30 rounded-lg text-white focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 transition-all"
-                >
-                  <option value="0">0 Additional Guests (Just Me)</option>
-                  <option value="1">1 Additional Guest (2 People Total)</option>
-                  <option value="2">2 Additional Guests (3 People Total)</option>
-                  <option value="3">3 Additional Guests (4 People Total)</option>
-                  <option value="4">4 Additional Guests (5 People Total)</option>
-                </select>
-              </div>
+              {/* VIP+ONE has fixed 1 guest, others can select */}
+              {formData.ticketType === "vip-plus" ? (
+                <div className="fade-in bg-[#FF6B35]/10 border border-[#FF6B35]/30 rounded-lg p-6" style={{ animationDelay: "0.3s" }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#FF6B35]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <h3 className="text-[#FF6B35] font-bold text-lg">VIP Plus-One Package</h3>
+                  </div>
+                  <p className="text-white/80 text-sm mb-2">This ticket includes you + 1 guest for a total of R2000</p>
+                  <div className="bg-black/30 rounded-lg p-4 border border-[#FF6B35]/20">
+                    <p className="text-white/60 text-xs mb-1">Total People:</p>
+                    <p className="text-white font-bold text-lg">2 People (You + Plus One)</p>
+                    <p className="text-[#FF6B35] font-bold text-xl mt-2">Total: R2,000</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="fade-in" style={{ animationDelay: "0.3s" }}>
+                  <label htmlFor="guests" className="block text-[#D4AF37] font-semibold mb-2">
+                    Additional Guests (Excluding Yourself) *
+                  </label>
+                  <select
+                    id="guests"
+                    name="guests"
+                    required
+                    value={formData.guests}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-black/50 border-2 border-[#D4AF37]/30 rounded-lg text-white focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 transition-all"
+                  >
+                    <option value="0">0 Additional Guests (Just Me)</option>
+                    <option value="1">1 Additional Guest (2 People Total)</option>
+                    <option value="2">2 Additional Guests (3 People Total)</option>
+                    <option value="3">3 Additional Guests (4 People Total)</option>
+                    <option value="4">4 Additional Guests (5 People Total)</option>
+                  </select>
+                </div>
+              )}
 
               {/* Guest Names Section */}
               {parseInt(formData.guests) > 0 && (
-                <div className="fade-in bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-lg p-6" style={{ animationDelay: "0.35s" }}>
-                  <h3 className="text-[#D4AF37] font-bold text-lg mb-4">Additional Guest Names</h3>
-                  <p className="text-white/70 text-sm mb-4">Please provide the full names of your additional guests (not including yourself)</p>
+                <div className={`fade-in ${formData.ticketType === "vip-plus" ? "bg-[#FF6B35]/10 border-[#FF6B35]/30" : "bg-[#D4AF37]/10 border-[#D4AF37]/30"} border rounded-lg p-6`} style={{ animationDelay: "0.35s" }}>
+                  <h3 className={`${formData.ticketType === "vip-plus" ? "text-[#FF6B35]" : "text-[#D4AF37]"} font-bold text-lg mb-4`}>
+                    {formData.ticketType === "vip-plus" ? "Plus One Name" : "Additional Guest Names"}
+                  </h3>
+                  <p className="text-white/70 text-sm mb-4">
+                    {formData.ticketType === "vip-plus" 
+                      ? "Please provide the full name of your Plus One" 
+                      : "Please provide the full names of your additional guests (not including yourself)"}
+                  </p>
                   <div className="space-y-3">
                     {Array.from({ length: parseInt(formData.guests) }).map((_, index) => (
                       <div key={index}>
                         <label htmlFor={`guest-${index}`} className="block text-white/80 font-medium mb-1 text-sm">
-                          Guest {index + 1} *
+                          {formData.ticketType === "vip-plus" ? "Plus One Full Name *" : `Guest ${index + 1} *`}
                         </label>
                         <input
                           type="text"
@@ -500,8 +526,8 @@ export default function Home() {
                           required
                           value={formData.guestNames[index]}
                           onChange={(e) => handleGuestNameChange(index, e.target.value)}
-                          className="w-full px-4 py-2.5 bg-black/50 border-2 border-[#D4AF37]/30 rounded-lg text-white placeholder-white/30 focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 transition-all"
-                          placeholder={index === 0 ? formData.name || "Full Name" : "Full Name"}
+                          className={`w-full px-4 py-2.5 bg-black/50 border-2 ${formData.ticketType === "vip-plus" ? "border-[#FF6B35]/30 focus:border-[#FF6B35] focus:ring-[#FF6B35]/50" : "border-[#D4AF37]/30 focus:border-[#D4AF37] focus:ring-[#D4AF37]/50"} rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 transition-all`}
+                          placeholder={formData.ticketType === "vip-plus" ? "Enter Plus One's full name" : "Full Name"}
                         />
                       </div>
                     ))}
