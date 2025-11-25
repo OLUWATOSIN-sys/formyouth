@@ -216,7 +216,7 @@ export default function UploadPaymentPage() {
           </button>
 
           <p className="text-white/50 text-sm mt-4 text-center">
-            ⚠️ Payment due by <span className="text-[#FFD700] font-semibold">November 20th, 2025</span>
+            ⚠️ Payment due by <span className="text-[#FFD700] font-semibold">November 27th, 2025</span>
           </p>
         </div>
       </div>

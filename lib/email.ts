@@ -97,7 +97,7 @@ export async function sendPaymentUploadEmail(
               <a href="${uploadLink}" class="button">UPLOAD PROOF OF PAYMENT</a>
             </div>
             
-            <p class="warning">⚠️ Important: Payment due by November 20th, 2025</p>
+            <p class="warning">⚠️ Important: Payment due by November 27th, 2025</p>
             
             <div class="info-box">
               <h4 style="color: #FFD700; margin-top: 0;">Payment Instructions:</h4>
