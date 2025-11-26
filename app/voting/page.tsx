@@ -244,21 +244,41 @@ export default function VotingPage() {
                   {category.nominees.map((nominee) => (
                     <label 
                       key={nominee}
-                      className={`flex items-center p-4 rounded-lg cursor-pointer transition-all ${
+                      className={`relative flex items-center p-4 rounded-lg cursor-pointer transition-all group ${
                         votes[category.id] === nominee
-                          ? 'bg-[#D4AF37] bg-opacity-20 border-2 border-[#D4AF37]'
-                          : 'bg-gray-800 bg-opacity-50 border-2 border-transparent hover:border-[#D4AF37] hover:border-opacity-50'
+                          ? 'bg-gradient-to-r from-[#D4AF37] to-[#FFD700] bg-opacity-20 border-2 border-[#D4AF37] shadow-lg shadow-[#D4AF37]/20'
+                          : 'bg-gray-800 bg-opacity-50 border-2 border-gray-700 hover:border-[#D4AF37] hover:shadow-md hover:shadow-[#D4AF37]/10'
                       }`}
                     >
-                      <input
-                        type="radio"
-                        name={category.id}
-                        value={nominee}
-                        checked={votes[category.id] === nominee}
-                        onChange={() => handleVoteChange(category.id, nominee)}
-                        className="w-5 h-5 text-[#D4AF37] focus:ring-[#D4AF37] focus:ring-2"
-                      />
-                      <span className="ml-3 text-white text-lg">{nominee}</span>
+                      <div className="relative flex items-center justify-center">
+                        <input
+                          type="radio"
+                          name={category.id}
+                          value={nominee}
+                          checked={votes[category.id] === nominee}
+                          onChange={() => handleVoteChange(category.id, nominee)}
+                          className="sr-only"
+                        />
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                          votes[category.id] === nominee
+                            ? 'border-[#D4AF37] bg-[#D4AF37]'
+                            : 'border-gray-500 bg-transparent group-hover:border-[#D4AF37]'
+                        }`}>
+                          {votes[category.id] === nominee && (
+                            <div className="w-3 h-3 rounded-full bg-black"></div>
+                          )}
+                        </div>
+                      </div>
+                      <span className={`ml-4 text-lg font-medium transition-colors ${
+                        votes[category.id] === nominee
+                          ? 'text-black'
+                          : 'text-white group-hover:text-[#D4AF37]'
+                      }`}>{nominee}</span>
+                      {votes[category.id] === nominee && (
+                        <svg className="w-5 h-5 text-[#FFD700] ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      )}
                     </label>
                   ))}
                 </div>
