@@ -83,13 +83,51 @@ const categories = [
   }
 ];
 
+// Generate device fingerprint based on browser characteristics
+const generateDeviceFingerprint = () => {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    ctx.textBaseline = 'top';
+    ctx.font = '14px Arial';
+    ctx.fillText('fingerprint', 2, 2);
+  }
+  const canvasFingerprint = canvas.toDataURL();
+  
+  const fingerprint = [
+    navigator.userAgent,
+    navigator.language,
+    screen.colorDepth,
+    screen.width,
+    screen.height,
+    new Date().getTimezoneOffset(),
+    navigator.hardwareConcurrency || 'unknown',
+    navigator.platform,
+    canvasFingerprint.slice(0, 100)
+  ].join('|');
+  
+  // Create a simple hash
+  let hash = 0;
+  for (let i = 0; i < fingerprint.length; i++) {
+    const char = fingerprint.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36);
+};
+
 export default function VotingPage() {
   const [votes, setVotes] = useState<VoteData>({});
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [alreadyVoted, setAlreadyVoted] = useState(false);
+  const [deviceId, setDeviceId] = useState<string>("");
 
   useEffect(() => {
+    // Generate device fingerprint
+    const fingerprint = generateDeviceFingerprint();
+    setDeviceId(fingerprint);
+    
     // Check if user has already voted (permanent restriction)
     const hasVoted = localStorage.getItem("hasVoted");
     if (hasVoted === "true") {
@@ -122,7 +160,7 @@ export default function VotingPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ votes }),
+        body: JSON.stringify({ votes, deviceId }),
       });
 
       const data = await response.json();

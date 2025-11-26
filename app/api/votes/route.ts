@@ -6,23 +6,27 @@ import { headers } from "next/headers";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { votes } = body;
+    const { votes, deviceId } = body;
 
-    // Get device fingerprint from headers
+    if (!deviceId) {
+      return NextResponse.json(
+        { error: "Device identification required" },
+        { status: 400 }
+      );
+    }
+
+    // Get additional info from headers for logging
     const headersList = await headers();
     const userAgent = headersList.get("user-agent") || "";
     const forwarded = headersList.get("x-forwarded-for");
     const ip = forwarded ? forwarded.split(",")[0] : headersList.get("x-real-ip") || "unknown";
-    
-    // Create a device fingerprint
-    const deviceFingerprint = `${ip}-${userAgent}`;
 
     const client = await clientPromise;
     const db = client.db("youthgala");
 
     // Check if this device has already voted (permanent restriction)
     const existingVote = await db.collection("votes").findOne({
-      deviceFingerprint
+      deviceId
     });
 
     if (existingVote) {
@@ -35,7 +39,7 @@ export async function POST(request: Request) {
     // Save the votes
     const voteRecord = {
       votes,
-      deviceFingerprint,
+      deviceId,
       ip,
       userAgent,
       timestamp: new Date()
