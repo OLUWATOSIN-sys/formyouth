@@ -154,8 +154,18 @@ export async function sendPaymentUploadEmail(
 
 export async function sendPaymentConfirmationEmail(
   to: string,
-  name: string
+  name: string,
+  ticketType: string = "regular",
+  guests: string = "0"
 ) {
+  // Calculate the correct amount based on ticket type
+  const amount = ticketType === "vip-plus" 
+    ? 2000 // Flat rate for VIP Plus-One (always 2 people)
+    : (parseInt(guests) + 1) * (ticketType === "vip" ? 1500 : 500); // Regular and VIP calculated per person
+  
+  const totalPeople = ticketType === "vip-plus" ? 2 : parseInt(guests) + 1;
+  const ticketLabel = ticketType === "vip" ? "VIP" : ticketType === "vip-plus" ? "VIP Plus-One" : "Regular";
+  const pricePerPerson = amount / totalPeople;
   const mailOptions = {
     from: `"Youth Gala 2025" <rccggala@gmail.com>`,
     to: to,
@@ -197,17 +207,28 @@ export async function sendPaymentConfirmationEmail(
             <p><strong>Date:</strong> 29th November 2025</p>
             <p><strong>Theme:</strong> ROYALTY</p>
             <p><strong>Dress Code:</strong> Royal Attire</p>
-            <p><strong>Entry Fee:</strong> R500 per person</p>
+            <p><strong>Ticket Type:</strong> ${ticketLabel}</p>
+            ${ticketType === "vip-plus" 
+              ? `<p><strong>Package:</strong> You + 1 Plus One (2 People Total)</p>` 
+              : `<p><strong>Total People:</strong> ${totalPeople} ${totalPeople === 1 ? "person" : "people"} (including you)</p>`
+            }
+            <p style="font-size: 18px; margin-top: 15px; padding: 10px; background: rgba(255, 215, 0, 0.1); border-left: 4px solid #FFD700;">
+              <strong>TOTAL PAID:</strong> <span style="color: #FFD700; font-size: 24px;">R${amount.toLocaleString()}</span>
+            </p>
+            ${ticketType === "vip-plus" 
+              ? `<p style="font-size: 12px; color: #888; margin-top: 5px;">(Fixed rate for 2 people)</p>` 
+              : `<p style="font-size: 12px; color: #888; margin-top: 5px;">(${totalPeople} ${totalPeople === 1 ? "person" : "people"} × R${pricePerPerson.toLocaleString()} per person)</p>`
+            }
           </div>
           
           <p>We look forward to seeing you at the event! Get ready for an unforgettable night of celebration.</p>
           
-          <p>If you have any questions, contact us at <a href="mailto:info@cccyouth.com" style="color: #D4AF37;">info@cccyouth.com</a></p>
+  
           
           <p style="margin-top: 30px;"><strong style="color: #D4AF37;">See you there!</strong></p>
           
           <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #888;">
-            <p>© 2025 CCC Youth Gala. All rights reserved.</p>
+            <p>© 2025 RccgYouth Gala. All rights reserved.</p>
           </div>
         </div>
       </body>

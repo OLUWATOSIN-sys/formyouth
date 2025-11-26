@@ -36,7 +36,12 @@ export async function POST(request: Request) {
     // Send confirmation email
     if (registrant.email) {
       const { sendPaymentConfirmationEmail } = await import("@/lib/email");
-      sendPaymentConfirmationEmail(registrant.email, registrant.name).catch(err =>
+      sendPaymentConfirmationEmail(
+        registrant.email, 
+        registrant.name,
+        registrant.ticketType || "regular",
+        registrant.guests || "0"
+      ).catch(err =>
         console.error("Failed to send confirmation email:", err)
       );
     }
