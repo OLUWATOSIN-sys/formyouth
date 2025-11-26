@@ -203,7 +203,7 @@ export default function VotingPage() {
                 </div>
                 <h1 className="text-3xl font-bold text-[#D4AF37] mb-4">Already Voted</h1>
                 <p className="text-gray-300 text-lg">
-                  You have already submitted your votes from this device.
+                  You have already submitted your votes 😉
                 </p>
                 <p className="text-gray-400 mt-4">
                   Thank you for participating!
