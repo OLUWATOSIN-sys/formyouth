@@ -242,7 +242,7 @@ export default function VoteLifetimePage() {
                       onClick={(e) => {
                         e.preventDefault();
                         setSelectedImage({ 
-                          src: nominee.image || getImagePath(nominee.name), 
+                          src: getImagePath(nominee.name), 
                           name: nominee.name 
                         });
                       }}
@@ -253,7 +253,7 @@ export default function VoteLifetimePage() {
                       }`}
                     >
                       <Image
-                        src={nominee.image || getImagePath(nominee.name)}
+                        src={getImagePath(nominee.name)}
                         alt={nominee.name}
                         fill
                         className="object-cover"

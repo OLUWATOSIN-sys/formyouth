@@ -235,7 +235,7 @@ export default function VoteServicePage() {
                       onClick={(e) => {
                         e.preventDefault();
                         setSelectedImage({ 
-                          src: nominee.image || getImagePath(nominee.name), 
+                          src: getImagePath(nominee.name), 
                           name: nominee.name 
                         });
                       }}
@@ -246,7 +246,7 @@ export default function VoteServicePage() {
                       }`}
                     >
                       <Image
-                        src={nominee.image || getImagePath(nominee.name)}
+                        src={getImagePath(nominee.name)}
                         alt={nominee.name}
                         fill
                         className="object-cover"

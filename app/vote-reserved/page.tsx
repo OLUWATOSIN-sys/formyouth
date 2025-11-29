@@ -164,8 +164,8 @@ export default function VoteReservedPage() {
                         {selectedNominee === nominee.name && <div className="w-3 h-3 rounded-full bg-black"></div>}
                       </div>
                     </div>
-                    <div onClick={(e) => { e.preventDefault(); setSelectedImage({ src: nominee.image || getImagePath(nominee.name), name: nominee.name }); }} className={`ml-4 relative w-20 h-20 rounded-full overflow-hidden border-4 transition-all shadow-xl cursor-pointer hover:scale-110 ${selectedNominee === nominee.name ? 'border-[#FFD700] ring-4 ring-[#D4AF37] ring-opacity-50' : 'border-gray-600 group-hover:border-[#D4AF37]'}`}>
-                      <Image src={nominee.image || getImagePath(nominee.name)} alt={nominee.name} fill className="object-cover" onError={(e) => { const target = e.target as HTMLImageElement; target.src = '/nominees/placeholder.jpg'; }} />
+                    <div onClick={(e) => { e.preventDefault(); setSelectedImage({ src: getImagePath(nominee.name), name: nominee.name }); }} className={`ml-4 relative w-20 h-20 rounded-full overflow-hidden border-4 transition-all shadow-xl cursor-pointer hover:scale-110 ${selectedNominee === nominee.name ? 'border-[#FFD700] ring-4 ring-[#D4AF37] ring-opacity-50' : 'border-gray-600 group-hover:border-[#D4AF37]'}`}>
+                      <Image src={getImagePath(nominee.name)} alt={nominee.name} fill className="object-cover" onError={(e) => { const target = e.target as HTMLImageElement; target.src = '/nominees/placeholder.jpg'; }} />
                     </div>
                     <span className={`ml-4 text-lg font-medium transition-colors ${selectedNominee === nominee.name ? 'text-black' : 'text-white group-hover:text-[#D4AF37]'}`}>{nominee.name}</span>
                     {selectedNominee === nominee.name && <svg className="w-5 h-5 text-[#FFD700] ml-auto" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>}
