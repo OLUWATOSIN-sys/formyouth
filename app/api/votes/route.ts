@@ -24,16 +24,25 @@ export async function POST(request: Request) {
     const client = await clientPromise;
     const db = client.db("youthgala");
 
-    // Check if this device has already voted (permanent restriction)
-    const existingVote = await db.collection("votes").findOne({
-      deviceId
-    });
+    // Get the categories being voted on
+    const votedCategories = Object.keys(votes);
 
-    if (existingVote) {
-      return NextResponse.json(
-        { error: "You have already voted from this device." },
-        { status: 429 }
-      );
+    // Check if this device has already voted on any of these specific categories
+    const existingVotes = await db.collection("votes").find({
+      deviceId
+    }).toArray();
+
+    // Check for overlapping categories
+    for (const existingVote of existingVotes) {
+      const existingCategories = Object.keys(existingVote.votes);
+      const overlap = votedCategories.some(cat => existingCategories.includes(cat));
+      
+      if (overlap) {
+        return NextResponse.json(
+          { error: "You have already voted on some of these categories from this device." },
+          { status: 429 }
+        );
+      }
     }
 
     // Save the votes

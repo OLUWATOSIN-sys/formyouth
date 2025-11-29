@@ -1,0 +1,11 @@
+IMPORTANT: Please add a placeholder.jpg file to this folder!
+
+This file should be a default profile image that will be shown when a nominee's photo is not available.
+
+Recommended specifications:
+- Filename: placeholder.jpg
+- Size: 400x400px (square)
+- Format: JPG
+- Content: A generic profile silhouette or avatar icon with golden/black theme
+
+You can use a simple avatar icon or silhouette image as the placeholder.
