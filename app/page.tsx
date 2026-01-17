@@ -16,7 +16,7 @@ export default function Home() {
           RCCG Heavens Gate
         </h1>
         <p className="text-xl md:text-2xl text-white/60">
-          Youth Ministry
+          RCCG Heavens Gate Youth
         </p>
       </div>
     </div>
