@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Youth Gala 2025 - RSVP | Theme: Royalty",
-  description: "Join us for the most prestigious youth event of the year. Youth Gala 2025 - November 29th. Theme: Royalty. Secure your spot now!",
+  title: "Suggestion Box",
+  description: "Rccg Heaven's Gate Youth",
   icons: {
     icon: "https://www.rccg.org/wp-content/uploads/2020/11/rccg-for-web.png",
     shortcut: "https://www.rccg.org/wp-content/uploads/2020/11/rccg-for-web.png",
