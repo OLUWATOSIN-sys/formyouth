@@ -180,7 +180,7 @@ export default function AdminPage() {
                 </div>
                 <div>
                   <h1 className="text-2xl font-black text-white tracking-tight">Suggestions Dashboard</h1>
-                  <p className="text-white/40 text-sm font-medium">RCCG Heavens Gate Youth Ministry</p>
+                  <p className="text-white/40 text-sm font-medium">RCCG Heavens Gate Youth</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
