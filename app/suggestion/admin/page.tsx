@@ -10,6 +10,15 @@ interface Suggestion {
   status: "new" | "reviewed" | "implemented";
 }
 
+interface Birthday {
+  id: string;
+  fullName: string;
+  dateOfBirth: string;
+  phoneNumber: string;
+  email: string;
+  createdAt: string;
+}
+
 export default function AdminPage() {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,10 +27,16 @@ export default function AdminPage() {
   const [selectedSuggestion, setSelectedSuggestion] = useState<Suggestion | null>(null);
   const [filter, setFilter] = useState("all");
   const [refreshing, setRefreshing] = useState(false);
+  
+  // Birthday state
+  const [birthdays, setBirthdays] = useState<Birthday[]>([]);
+  const [activeTab, setActiveTab] = useState<"suggestions" | "birthdays">("suggestions");
+  const [selectedBirthday, setSelectedBirthday] = useState<Birthday | null>(null);
 
   useEffect(() => {
     if (authenticated) {
       fetchSuggestions();
+      fetchBirthdays();
     }
   }, [authenticated]);
 
@@ -37,6 +52,42 @@ export default function AdminPage() {
       setLoading(false);
       setRefreshing(false);
     }
+  };
+
+  const fetchBirthdays = async () => {
+    try {
+      const response = await fetch("/api/birthdays");
+      const data = await response.json();
+      setBirthdays(data);
+    } catch (error) {
+      console.error("Error fetching birthdays:", error);
+    }
+  };
+
+  const deleteBirthday = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this birthday record?")) return;
+    try {
+      await fetch("/api/birthdays", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      setSelectedBirthday(null);
+      fetchBirthdays();
+    } catch (error) {
+      console.error("Error deleting birthday:", error);
+    }
+  };
+
+  const getUpcomingBirthdays = () => {
+    const today = new Date();
+    return birthdays.filter((b) => {
+      const dob = new Date(b.dateOfBirth);
+      const thisYearBday = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+      const diffTime = thisYearBday.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays >= 0 && diffDays <= 30;
+    });
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -205,6 +256,43 @@ export default function AdminPage() {
         </header>
 
         <main className="container mx-auto px-6 py-10">
+          {/* Main Section Tabs */}
+          <div className="flex gap-3 mb-8">
+            <button
+              onClick={() => setActiveTab("suggestions")}
+              className={`flex items-center gap-3 px-6 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                activeTab === "suggestions"
+                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-[0_8px_32px_rgba(168,85,247,0.4)]"
+                  : "bg-white/[0.05] border border-white/[0.1] text-white/60 hover:text-white hover:bg-white/[0.1]"
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              Suggestions
+              <span className="px-2 py-1 bg-white/20 rounded-lg text-sm">{suggestions.length}</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("birthdays")}
+              className={`flex items-center gap-3 px-6 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                activeTab === "birthdays"
+                  ? "bg-gradient-to-r from-pink-500 via-orange-500 to-yellow-500 text-white shadow-[0_8px_32px_rgba(249,115,22,0.4)]"
+                  : "bg-white/[0.05] border border-white/[0.1] text-white/60 hover:text-white hover:bg-white/[0.1]"
+              }`}
+            >
+              <span className="text-xl">🎂</span>
+              Birthdays
+              <span className="px-2 py-1 bg-white/20 rounded-lg text-sm">{birthdays.length}</span>
+              {getUpcomingBirthdays().length > 0 && (
+                <span className="px-2 py-1 bg-green-500 rounded-lg text-xs animate-pulse">
+                  {getUpcomingBirthdays().length} upcoming
+                </span>
+              )}
+            </button>
+          </div>
+
+          {activeTab === "suggestions" && (
+            <>
           {/* Premium Stats Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
             <div className="group relative backdrop-blur-2xl bg-white/[0.05] border border-white/[0.1] rounded-3xl p-7 hover:bg-white/[0.08] transition-all duration-300 hover:scale-[1.02] cursor-default">
@@ -369,6 +457,140 @@ export default function AdminPage() {
               ))}
             </div>
           )}
+          </>
+          )}
+
+          {/* Birthdays Section */}
+          {activeTab === "birthdays" && (
+            <>
+              {/* Birthday Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
+                <div className="group relative backdrop-blur-2xl bg-white/[0.05] border border-white/[0.1] rounded-3xl p-7 hover:bg-white/[0.08] transition-all duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-br from-pink-500 to-orange-500 opacity-0 group-hover:opacity-5 rounded-3xl transition-opacity duration-300" />
+                  <div className="relative flex items-center justify-between">
+                    <div>
+                      <p className="text-white/50 font-semibold text-sm uppercase tracking-wider mb-2">Total Registered</p>
+                      <span className="text-4xl font-black bg-gradient-to-r from-pink-500 to-orange-500 bg-clip-text text-transparent">
+                        {birthdays.length}
+                      </span>
+                    </div>
+                    <div className="w-16 h-16 bg-gradient-to-br from-pink-500/20 to-orange-500/20 rounded-2xl flex items-center justify-center border border-white/[0.1]">
+                      <span className="text-3xl">🎂</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="group relative backdrop-blur-2xl bg-white/[0.05] border border-white/[0.1] rounded-3xl p-7 hover:bg-white/[0.08] transition-all duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-500 to-emerald-500 opacity-0 group-hover:opacity-5 rounded-3xl transition-opacity duration-300" />
+                  <div className="relative flex items-center justify-between">
+                    <div>
+                      <p className="text-white/50 font-semibold text-sm uppercase tracking-wider mb-2">Upcoming (30 days)</p>
+                      <span className="text-4xl font-black bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
+                        {getUpcomingBirthdays().length}
+                      </span>
+                    </div>
+                    <div className="w-16 h-16 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl flex items-center justify-center border border-white/[0.1]">
+                      <span className="text-3xl">🎉</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="group relative backdrop-blur-2xl bg-white/[0.05] border border-white/[0.1] rounded-3xl p-7 hover:bg-white/[0.08] transition-all duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-blue-500 opacity-0 group-hover:opacity-5 rounded-3xl transition-opacity duration-300" />
+                  <div className="relative flex items-center justify-between">
+                    <div>
+                      <p className="text-white/50 font-semibold text-sm uppercase tracking-wider mb-2">This Month</p>
+                      <span className="text-4xl font-black bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
+                        {birthdays.filter((b) => {
+                          const dob = new Date(b.dateOfBirth);
+                          return dob.getMonth() === new Date().getMonth();
+                        }).length}
+                      </span>
+                    </div>
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center border border-white/[0.1]">
+                      <span className="text-3xl">📅</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Birthday List */}
+              {birthdays.length === 0 ? (
+                <div className="text-center py-32">
+                  <div className="w-24 h-24 mx-auto mb-6 bg-white/[0.05] rounded-3xl flex items-center justify-center border border-white/[0.1]">
+                    <span className="text-5xl">🎂</span>
+                  </div>
+                  <p className="text-white/40 text-2xl font-medium">No birthdays registered yet</p>
+                  <p className="text-white/30 mt-2">Youth members can register on the suggestion page</p>
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+                  {birthdays.map((birthday, index) => {
+                    const dob = new Date(birthday.dateOfBirth);
+                    const today = new Date();
+                    const thisYearBday = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+                    const diffTime = thisYearBday.getTime() - today.getTime();
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    const isUpcoming = diffDays >= 0 && diffDays <= 30;
+                    const isToday = diffDays === 0;
+
+                    return (
+                      <div
+                        key={birthday.id}
+                        onClick={() => setSelectedBirthday(birthday)}
+                        className={`group relative backdrop-blur-2xl bg-white/[0.05] border rounded-3xl p-7 cursor-pointer hover:bg-white/[0.08] transition-all duration-300 hover:scale-[1.02] ${
+                          isToday ? "border-yellow-500/50 shadow-[0_0_30px_rgba(234,179,8,0.2)]" : isUpcoming ? "border-green-500/30" : "border-white/[0.1]"
+                        }`}
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        {isToday && (
+                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full text-white text-xs font-bold animate-bounce">
+                            🎉 TODAY! 🎉
+                          </div>
+                        )}
+                        {isUpcoming && !isToday && (
+                          <div className="absolute -top-3 right-4 px-3 py-1 bg-green-500 rounded-full text-white text-xs font-bold">
+                            In {diffDays} days
+                          </div>
+                        )}
+                        
+                        <div className="flex items-start gap-4">
+                          <div className="w-14 h-14 bg-gradient-to-br from-pink-500/30 to-orange-500/30 rounded-2xl flex items-center justify-center border border-white/[0.1] text-2xl">
+                            🎂
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-white font-bold text-lg mb-1">{birthday.fullName}</h3>
+                            <p className="text-white/50 text-sm">
+                              {new Date(birthday.dateOfBirth).toLocaleDateString("en-US", {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric",
+                              })}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 pt-4 border-t border-white/[0.08] space-y-2">
+                          <div className="flex items-center gap-2 text-white/40 text-sm">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            {birthday.phoneNumber}
+                          </div>
+                          <div className="flex items-center gap-2 text-white/40 text-sm">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            {birthday.email}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
         </main>
       </div>
 
@@ -452,6 +674,106 @@ export default function AdminPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
               Delete Suggestion
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Birthday Detail Modal */}
+      {selectedBirthday && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl"
+          onClick={() => setSelectedBirthday(null)}
+        >
+          <div 
+            className="w-full max-w-lg backdrop-blur-2xl bg-slate-900/95 border border-white/[0.15] rounded-[32px] p-10 shadow-[0_32px_128px_rgba(0,0,0,0.8)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-8">
+              <div className="w-20 h-20 bg-gradient-to-br from-pink-500/30 to-orange-500/30 rounded-3xl flex items-center justify-center border border-white/[0.1]">
+                <span className="text-4xl">🎂</span>
+              </div>
+              <button
+                onClick={() => setSelectedBirthday(null)}
+                className="w-12 h-12 bg-white/[0.05] border border-white/[0.1] rounded-2xl flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.1] transition-all"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <h2 className="text-3xl font-black text-white mb-2">{selectedBirthday.fullName}</h2>
+            
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center gap-3 p-4 bg-white/[0.05] rounded-2xl border border-white/[0.08]">
+                <div className="w-10 h-10 bg-pink-500/20 rounded-xl flex items-center justify-center">
+                  <span className="text-lg">📅</span>
+                </div>
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-wider">Date of Birth</p>
+                  <p className="text-white font-semibold">
+                    {new Date(selectedBirthday.dateOfBirth).toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-4 bg-white/[0.05] rounded-2xl border border-white/[0.08]">
+                <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-wider">Phone Number</p>
+                  <p className="text-white font-semibold">{selectedBirthday.phoneNumber}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-4 bg-white/[0.05] rounded-2xl border border-white/[0.08]">
+                <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-wider">Email Address</p>
+                  <p className="text-white font-semibold">{selectedBirthday.email}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-4 bg-white/[0.05] rounded-2xl border border-white/[0.08]">
+                <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-wider">Registered On</p>
+                  <p className="text-white font-semibold">
+                    {new Date(selectedBirthday.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => deleteBirthday(selectedBirthday.id)}
+              className="w-full py-4 bg-red-500/10 border border-red-500/30 text-red-400 font-bold rounded-2xl hover:bg-red-500/20 transition-all flex items-center justify-center gap-3"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Delete Birthday Record
             </button>
           </div>
         </div>

@@ -8,6 +8,39 @@ export default function SuggestionPage() {
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  
+  // Birthday form state
+  const [showBirthdayForm, setShowBirthdayForm] = useState(false);
+  const [birthdayData, setBirthdayData] = useState({
+    fullName: "",
+    dateOfBirth: "",
+    phoneNumber: "",
+    email: "",
+  });
+  const [birthdaySubmitted, setBirthdaySubmitted] = useState(false);
+  const [birthdayLoading, setBirthdayLoading] = useState(false);
+
+  const handleBirthdaySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBirthdayLoading(true);
+
+    try {
+      const response = await fetch("/api/birthdays", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(birthdayData),
+      });
+
+      if (response.ok) {
+        setBirthdaySubmitted(true);
+        setBirthdayData({ fullName: "", dateOfBirth: "", phoneNumber: "", email: "" });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setBirthdayLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,7 +175,133 @@ export default function SuggestionPage() {
             </form>
           </div>
 
-          {/* Footer */}
+          {/* Birthday Registration Card */}
+          <div className="mt-8">
+            <button
+              onClick={() => setShowBirthdayForm(!showBirthdayForm)}
+              className="w-full backdrop-blur-xl bg-gradient-to-r from-pink-500/20 via-orange-500/20 to-yellow-500/20 border border-white/20 rounded-3xl p-6 shadow-xl hover:scale-[1.01] transition-all duration-300 group"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0A1.75 1.75 0 013 15.546V12a9 9 0 0118 0v3.546zM12 4v1m0 0a9 9 0 00-9 9m9-9a9 9 0 019 9m-9-6v3" />
+                    </svg>
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-xl font-bold text-white">Register Your Birthday</h3>
+                    <p className="text-white/60 text-sm">Let us celebrate you!</p>
+                  </div>
+                </div>
+                <svg 
+                  className={`w-6 h-6 text-white/60 transition-transform duration-300 ${showBirthdayForm ? 'rotate-180' : ''}`} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </button>
+
+            {/* Birthday Form */}
+            {showBirthdayForm && (
+              <div className="mt-4 backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl animate-slide-down">
+                {birthdaySubmitted ? (
+                  <div className="text-center py-8">
+                    <div className="w-20 h-20 mx-auto bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-lg animate-bounce-slow">
+                      <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-2">Birthday Registered!</h3>
+                    <p className="text-white/60 mb-6">We can&apos;t wait to celebrate with you!</p>
+                    <button
+                      onClick={() => setBirthdaySubmitted(false)}
+                      className="px-6 py-3 bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/20 transition-all"
+                    >
+                      Register Another
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleBirthdaySubmit} className="space-y-5">
+                    <div className="text-center mb-6">
+                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500/30 to-orange-500/30 rounded-full border border-white/20">
+                        <span className="text-2xl">🎂</span>
+                        <span className="text-white font-medium">Birthday Registration</span>
+                        <span className="text-2xl">🎉</span>
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-pink-300 font-medium mb-2 text-sm">Full Name</label>
+                        <input
+                          type="text"
+                          required
+                          value={birthdayData.fullName}
+                          onChange={(e) => setBirthdayData({ ...birthdayData, fullName: e.target.value })}
+                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/30 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/50 focus:outline-none transition-all"
+                          placeholder="Enter your full name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-pink-300 font-medium mb-2 text-sm">Date of Birth</label>
+                        <input
+                          type="date"
+                          required
+                          value={birthdayData.dateOfBirth}
+                          onChange={(e) => setBirthdayData({ ...birthdayData, dateOfBirth: e.target.value })}
+                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/30 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/50 focus:outline-none transition-all [color-scheme:dark]"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-pink-300 font-medium mb-2 text-sm">Phone Number</label>
+                        <input
+                          type="tel"
+                          required
+                          value={birthdayData.phoneNumber}
+                          onChange={(e) => setBirthdayData({ ...birthdayData, phoneNumber: e.target.value })}
+                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/30 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/50 focus:outline-none transition-all"
+                          placeholder="e.g., +27 xxx xxx xxxx"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-pink-300 font-medium mb-2 text-sm">Email Address</label>
+                        <input
+                          type="email"
+                          required
+                          value={birthdayData.email}
+                          onChange={(e) => setBirthdayData({ ...birthdayData, email: e.target.value })}
+                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/30 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/50 focus:outline-none transition-all"
+                          placeholder="your@email.com"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={birthdayLoading}
+                      className="w-full py-4 bg-gradient-to-r from-pink-500 via-orange-500 to-yellow-500 text-white font-bold text-lg rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-xl hover:shadow-pink-500/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                    >
+                      {birthdayLoading ? (
+                        "Registering..."
+                      ) : (
+                        <>
+                          <span>🎂</span>
+                          Register My Birthday
+                          <span>🎉</span>
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
+              </div>
+            )}
+          </div>
          
         </div>
       </div>
