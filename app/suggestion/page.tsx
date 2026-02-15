@@ -17,7 +17,31 @@ export default function SuggestionPage() {
     phoneNumber: "",
     email: "",
   });
+  const [birthdayImage, setBirthdayImage] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [birthdaySubmitted, setBirthdaySubmitted] = useState(false);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image must be less than 5MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result as string;
+        setBirthdayImage(base64);
+        setImagePreview(base64);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setBirthdayImage(null);
+    setImagePreview(null);
+  };
   const [birthdayLoading, setBirthdayLoading] = useState(false);
 
   const handleBirthdaySubmit = async (e: React.FormEvent) => {
@@ -28,12 +52,14 @@ export default function SuggestionPage() {
       const response = await fetch("/api/birthdays", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(birthdayData),
+        body: JSON.stringify({ ...birthdayData, image: birthdayImage }),
       });
 
       if (response.ok) {
         setBirthdaySubmitted(true);
         setBirthdayData({ fullName: "", dateOfBirth: "", phoneNumber: "", email: "" });
+        setBirthdayImage(null);
+        setImagePreview(null);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -280,6 +306,63 @@ export default function SuggestionPage() {
                           placeholder="your@email.com"
                         />
                       </div>
+                    </div>
+
+                    {/* Photo Upload Section */}
+                    <div>
+                      <label className="block text-pink-300 font-medium mb-2 text-sm">Your Photo (Optional)</label>
+                      {imagePreview ? (
+                        <div className="relative inline-block">
+                          <img
+                            src={imagePreview}
+                            alt="Preview"
+                            className="w-32 h-32 object-cover rounded-2xl border-2 border-pink-500/50"
+                          />
+                          <button
+                            type="button"
+                            onClick={removeImage}
+                            className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white hover:bg-red-600 transition-all shadow-lg"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex gap-3">
+                          <label className="flex-1 cursor-pointer">
+                            <div className="flex items-center justify-center gap-3 px-4 py-4 bg-white/5 border border-dashed border-white/30 rounded-xl hover:bg-white/10 hover:border-pink-500/50 transition-all">
+                              <svg className="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              <span className="text-white/60 text-sm">Upload Photo</span>
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageChange}
+                              className="hidden"
+                            />
+                          </label>
+                          <label className="flex-1 cursor-pointer">
+                            <div className="flex items-center justify-center gap-3 px-4 py-4 bg-white/5 border border-dashed border-white/30 rounded-xl hover:bg-white/10 hover:border-pink-500/50 transition-all">
+                              <svg className="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                              <span className="text-white/60 text-sm">Take Photo</span>
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              capture="user"
+                              onChange={handleImageChange}
+                              className="hidden"
+                            />
+                          </label>
+                        </div>
+                      )}
+                      <p className="text-white/40 text-xs mt-2">Max 5MB. This photo will be displayed on your birthday.</p>
                     </div>
 
                     <button

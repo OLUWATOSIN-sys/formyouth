@@ -16,6 +16,7 @@ interface Birthday {
   dateOfBirth: string;
   phoneNumber: string;
   email: string;
+  image: string | null;
   createdAt: string;
 }
 
@@ -555,9 +556,19 @@ export default function AdminPage() {
                         )}
                         
                         <div className="flex items-start gap-4">
-                          <div className="w-14 h-14 bg-gradient-to-br from-pink-500/30 to-orange-500/30 rounded-2xl flex items-center justify-center border border-white/[0.1] text-2xl">
-                            
-                          </div>
+                          {birthday.image ? (
+                            <img
+                              src={birthday.image}
+                              alt={birthday.fullName}
+                              className="w-14 h-14 object-cover rounded-2xl border border-white/[0.1]"
+                            />
+                          ) : (
+                            <div className="w-14 h-14 bg-gradient-to-br from-pink-500/30 to-orange-500/30 rounded-2xl flex items-center justify-center border border-white/[0.1]">
+                              <svg className="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              </svg>
+                            </div>
+                          )}
                           <div className="flex-1">
                             <h3 className="text-white font-bold text-lg mb-1">{birthday.fullName}</h3>
                             <p className="text-white/50 text-sm">
@@ -689,13 +700,10 @@ export default function AdminPage() {
             className="w-full max-w-lg backdrop-blur-2xl bg-slate-900/95 border border-white/[0.15] rounded-[32px] p-10 shadow-[0_32px_128px_rgba(0,0,0,0.8)]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-start justify-between mb-8">
-              <div className="w-20 h-20 bg-gradient-to-br from-pink-500/30 to-orange-500/30 rounded-3xl flex items-center justify-center border border-white/[0.1]">
-                <span className="text-4xl"></span>
-              </div>
+            <div className="flex items-start justify-between mb-6">
               <button
                 onClick={() => setSelectedBirthday(null)}
-                className="w-12 h-12 bg-white/[0.05] border border-white/[0.1] rounded-2xl flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.1] transition-all"
+                className="ml-auto w-12 h-12 bg-white/[0.05] border border-white/[0.1] rounded-2xl flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.1] transition-all"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -703,7 +711,40 @@ export default function AdminPage() {
               </button>
             </div>
 
-            <h2 className="text-3xl font-black text-white mb-2">{selectedBirthday.fullName}</h2>
+            {/* Photo Section */}
+            {selectedBirthday.image ? (
+              <div className="mb-6 text-center">
+                <div className="relative inline-block">
+                  <img
+                    src={selectedBirthday.image}
+                    alt={selectedBirthday.fullName}
+                    className="w-40 h-40 object-cover rounded-3xl border-2 border-pink-500/30 shadow-xl"
+                  />
+                  <a
+                    href={selectedBirthday.image}
+                    download={`${selectedBirthday.fullName.replace(/\s+/g, '_')}_photo.jpg`}
+                    className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-500 rounded-full text-white text-sm font-bold flex items-center gap-2 hover:scale-105 transition-transform shadow-lg"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Save Photo
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <div className="mb-6 text-center">
+                <div className="w-32 h-32 mx-auto bg-gradient-to-br from-pink-500/20 to-orange-500/20 rounded-3xl flex items-center justify-center border border-white/[0.1]">
+                  <svg className="w-12 h-12 text-pink-400/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <p className="text-white/30 text-sm mt-3">No photo uploaded</p>
+              </div>
+            )}
+
+            <h2 className="text-3xl font-black text-white mb-2 text-center">{selectedBirthday.fullName}</h2>
             
             <div className="space-y-4 mb-8">
               <div className="flex items-center gap-3 p-4 bg-white/[0.05] rounded-2xl border border-white/[0.08]">

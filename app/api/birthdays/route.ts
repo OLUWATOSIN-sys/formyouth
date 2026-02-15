@@ -18,6 +18,7 @@ export async function GET() {
         dateOfBirth: b.dateOfBirth,
         phoneNumber: b.phoneNumber,
         email: b.email,
+        image: b.image || null,
         createdAt: b.createdAt,
       }))
     );
@@ -37,6 +38,7 @@ export async function POST(request: NextRequest) {
       dateOfBirth: body.dateOfBirth,
       phoneNumber: body.phoneNumber,
       email: body.email,
+      image: body.image || null,
       createdAt: new Date().toISOString(),
     };
 
