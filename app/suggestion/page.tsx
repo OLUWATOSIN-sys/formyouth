@@ -227,9 +227,9 @@ export default function SuggestionPage() {
                   <form onSubmit={handleBirthdaySubmit} className="space-y-5">
                     <div className="text-center mb-6">
                       <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500/30 to-orange-500/30 rounded-full border border-white/20">
-                        <span className="text-2xl">🎂</span>
+                        <span className="text-2xl"></span>
                         <span className="text-white font-medium">Birthday Registration</span>
-                        <span className="text-2xl">🎉</span>
+                        <span className="text-2xl"></span>
                       </div>
                     </div>
 
@@ -291,9 +291,9 @@ export default function SuggestionPage() {
                         "Registering..."
                       ) : (
                         <>
-                          <span>🎂</span>
+                          <span></span>
                           Register My Birthday
-                          <span>🎉</span>
+                          <span></span>
                         </>
                       )}
                     </button>

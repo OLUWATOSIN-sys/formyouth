@@ -280,7 +280,7 @@ export default function AdminPage() {
                   : "bg-white/[0.05] border border-white/[0.1] text-white/60 hover:text-white hover:bg-white/[0.1]"
               }`}
             >
-              <span className="text-xl">🎂</span>
+              <span className="text-xl"></span>
               Birthdays
               <span className="px-2 py-1 bg-white/20 rounded-lg text-sm">{birthdays.length}</span>
               {getUpcomingBirthdays().length > 0 && (
@@ -475,7 +475,7 @@ export default function AdminPage() {
                       </span>
                     </div>
                     <div className="w-16 h-16 bg-gradient-to-br from-pink-500/20 to-orange-500/20 rounded-2xl flex items-center justify-center border border-white/[0.1]">
-                      <span className="text-3xl">🎂</span>
+                      <span className="text-3xl"></span>
                     </div>
                   </div>
                 </div>
@@ -518,7 +518,7 @@ export default function AdminPage() {
               {birthdays.length === 0 ? (
                 <div className="text-center py-32">
                   <div className="w-24 h-24 mx-auto mb-6 bg-white/[0.05] rounded-3xl flex items-center justify-center border border-white/[0.1]">
-                    <span className="text-5xl">🎂</span>
+                    <span className="text-5xl"></span>
                   </div>
                   <p className="text-white/40 text-2xl font-medium">No birthdays registered yet</p>
                   <p className="text-white/30 mt-2">Youth members can register on the suggestion page</p>
@@ -556,7 +556,7 @@ export default function AdminPage() {
                         
                         <div className="flex items-start gap-4">
                           <div className="w-14 h-14 bg-gradient-to-br from-pink-500/30 to-orange-500/30 rounded-2xl flex items-center justify-center border border-white/[0.1] text-2xl">
-                            🎂
+                            
                           </div>
                           <div className="flex-1">
                             <h3 className="text-white font-bold text-lg mb-1">{birthday.fullName}</h3>
@@ -691,7 +691,7 @@ export default function AdminPage() {
           >
             <div className="flex items-start justify-between mb-8">
               <div className="w-20 h-20 bg-gradient-to-br from-pink-500/30 to-orange-500/30 rounded-3xl flex items-center justify-center border border-white/[0.1]">
-                <span className="text-4xl">🎂</span>
+                <span className="text-4xl"></span>
               </div>
               <button
                 onClick={() => setSelectedBirthday(null)}
