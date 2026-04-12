@@ -138,9 +138,7 @@ export default function BirthdayPage() {
             <form onSubmit={handleBirthdaySubmit} className="space-y-5">
               <div className="text-center mb-6">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500/30 to-orange-500/30 rounded-full border border-white/20">
-                  <span className="text-2xl">🎂</span>
                   <span className="text-white font-medium">Birthday Registration</span>
-                  <span className="text-2xl">🎉</span>
                 </div>
               </div>
 
@@ -255,15 +253,7 @@ export default function BirthdayPage() {
                 disabled={birthdayLoading}
                 className="w-full py-5 bg-gradient-to-r from-pink-500 via-orange-500 to-yellow-500 text-white font-bold text-lg rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-xl hover:shadow-pink-500/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
               >
-                {birthdayLoading ? (
-                  "Registering..."
-                ) : (
-                  <>
-                    <span>🎂</span>
-                    Register My Birthday
-                    <span>🎉</span>
-                  </>
-                )}
+                {birthdayLoading ? "Registering..." : "Register My Birthday"}
               </button>
             </form>
           </div>
