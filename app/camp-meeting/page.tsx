@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Anton } from "next/font/google";
 
 const anton = Anton({ subsets: ["latin"], weight: "400" });
 
 export default function CampMeetingPage() {
+  useEffect(() => {
+    document.title = "Cave of Adullam 2026 - Camp Meeting Sign-In";
+  }, []);
   const [formData, setFormData] = useState({
     date: "",
     fullName: "",
@@ -160,14 +163,14 @@ export default function CampMeetingPage() {
 
         {/* Sign-In Form Card */}
         <div className="max-w-2xl mx-auto animate-slide-up">
-          <div className="backdrop-blur-2xl bg-white/10 border-2 border-amber-400/30 rounded-[2rem] p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
+          <div className="backdrop-blur-2xl bg-white/10 border-2 border-amber-400/30 rounded-3xl p-5 sm:p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
             {/* Form Header */}
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-amber-500/40 to-orange-500/40 rounded-full border border-amber-400/40">
-                <svg className="w-8 h-8 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-center mb-8">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 px-4 py-4 sm:px-6 sm:py-3 bg-gradient-to-r from-amber-500/40 to-orange-500/40 rounded-2xl sm:rounded-full border border-amber-400/40">
+                <svg className="w-8 h-8 text-amber-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-white font-bold text-xl">Sign In to Camp Ground</span>
+                <span className={`text-white font-bold text-lg sm:text-xl text-center ${anton.className}`}>Sign In to Camp Ground</span>
               </div>
             </div>
 
@@ -204,7 +207,7 @@ export default function CampMeetingPage() {
                   required
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  className="w-full px-6 py-4 bg-white/10 border-2 border-amber-400/30 rounded-xl text-white text-lg placeholder-white/40 focus:border-amber-400 focus:ring-4 focus:ring-amber-400/30 focus:outline-none transition-all duration-300 [color-scheme:dark] hover:border-amber-400/50 group-hover:bg-white/15"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/10 border-2 border-amber-400/30 rounded-xl text-white text-base sm:text-lg placeholder-white/40 focus:border-amber-400 focus:ring-4 focus:ring-amber-400/30 focus:outline-none transition-all duration-300 [color-scheme:dark] hover:border-amber-400/50 group-hover:bg-white/15"
                 />
               </div>
 
@@ -222,7 +225,7 @@ export default function CampMeetingPage() {
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   placeholder="Enter your full name"
-                  className="w-full px-6 py-4 bg-white/10 border-2 border-amber-400/30 rounded-xl text-white text-lg placeholder-white/40 focus:border-amber-400 focus:ring-4 focus:ring-amber-400/30 focus:outline-none transition-all duration-300 hover:border-amber-400/50 group-hover:bg-white/15"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/10 border-2 border-amber-400/30 rounded-xl text-white text-base sm:text-lg placeholder-white/40 focus:border-amber-400 focus:ring-4 focus:ring-amber-400/30 focus:outline-none transition-all duration-300 hover:border-amber-400/50 group-hover:bg-white/15"
                 />
               </div>
 
@@ -238,7 +241,7 @@ export default function CampMeetingPage() {
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, gender: "Male" })}
-                    className={`py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 ${
+                    className={`py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 ${
                       formData.gender === "Male"
                         ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/30 scale-[1.02]"
                         : "bg-white/10 text-white/70 border-2 border-white/20 hover:border-blue-400/50 hover:bg-white/15"
@@ -252,7 +255,7 @@ export default function CampMeetingPage() {
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, gender: "Female" })}
-                    className={`py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 ${
+                    className={`py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 ${
                       formData.gender === "Female"
                         ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg shadow-pink-500/30 scale-[1.02]"
                         : "bg-white/10 text-white/70 border-2 border-white/20 hover:border-pink-400/50 hover:bg-white/15"
@@ -280,7 +283,7 @@ export default function CampMeetingPage() {
                   value={formData.parish}
                   onChange={(e) => setFormData({ ...formData, parish: e.target.value })}
                   placeholder="Enter your parish name"
-                  className="w-full px-6 py-4 bg-white/10 border-2 border-amber-400/30 rounded-xl text-white text-lg placeholder-white/40 focus:border-amber-400 focus:ring-4 focus:ring-amber-400/30 focus:outline-none transition-all duration-300 hover:border-amber-400/50 group-hover:bg-white/15"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/10 border-2 border-amber-400/30 rounded-xl text-white text-base sm:text-lg placeholder-white/40 focus:border-amber-400 focus:ring-4 focus:ring-amber-400/30 focus:outline-none transition-all duration-300 hover:border-amber-400/50 group-hover:bg-white/15"
                 />
               </div>
 
@@ -298,7 +301,7 @@ export default function CampMeetingPage() {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="e.g., +27 xxx xxx xxxx"
-                  className="w-full px-6 py-4 bg-white/10 border-2 border-amber-400/30 rounded-xl text-white text-lg placeholder-white/40 focus:border-amber-400 focus:ring-4 focus:ring-amber-400/30 focus:outline-none transition-all duration-300 hover:border-amber-400/50 group-hover:bg-white/15"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/10 border-2 border-amber-400/30 rounded-xl text-white text-base sm:text-lg placeholder-white/40 focus:border-amber-400 focus:ring-4 focus:ring-amber-400/30 focus:outline-none transition-all duration-300 hover:border-amber-400/50 group-hover:bg-white/15"
                 />
               </div>
 
@@ -306,7 +309,7 @@ export default function CampMeetingPage() {
               <button
                 type="submit"
                 disabled={loading || !formData.gender}
-                className="w-full py-6 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white font-black text-xl rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-2xl hover:shadow-orange-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-4 mt-8"
+                className={`w-full py-4 sm:py-6 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white font-bold text-base sm:text-xl rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-2xl hover:shadow-orange-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mt-6 sm:mt-8 ${anton.className}`}
               >
                 {loading ? (
                   <>
@@ -314,14 +317,14 @@ export default function CampMeetingPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    Signing In...
+                    <span>Signing In...</span>
                   </>
                 ) : (
                   <>
-                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    SIGN IN TO CAMP GROUND
+                    <span>SIGN IN TO CAMP</span>
                   </>
                 )}
               </button>
