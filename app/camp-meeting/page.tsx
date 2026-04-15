@@ -24,6 +24,8 @@ interface Settings {
 export default function CampMeetingPage() {
   const [activeTab, setActiveTab] = useState<"signin" | "signout">("signin");
   const [searchName, setSearchName] = useState("");
+  const [suggestions, setSuggestions] = useState<Attendee[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [foundAttendee, setFoundAttendee] = useState<Attendee | null>(null);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
@@ -36,6 +38,28 @@ export default function CampMeetingPage() {
     document.title = "Cave of Adullam 2026 - Camp Meeting";
     fetchSettings();
   }, []);
+
+  // Live search as user types
+  useEffect(() => {
+    const searchAttendees = async () => {
+      if (searchName.trim().length < 2) {
+        setSuggestions([]);
+        setShowSuggestions(false);
+        return;
+      }
+      try {
+        const response = await fetch(`/api/camp-meeting?action=searchAttendees&fullName=${encodeURIComponent(searchName)}`);
+        const data = await response.json();
+        setSuggestions(data);
+        setShowSuggestions(data.length > 0);
+      } catch (err) {
+        console.error("Search error:", err);
+      }
+    };
+    
+    const debounce = setTimeout(searchAttendees, 300);
+    return () => clearTimeout(debounce);
+  }, [searchName]);
 
   const fetchSettings = async () => {
     try {
@@ -55,12 +79,19 @@ export default function CampMeetingPage() {
     });
   };
 
+  const selectAttendee = (attendee: Attendee) => {
+    setFoundAttendee(attendee);
+    setSearchName(attendee.fullName);
+    setShowSuggestions(false);
+    setSuggestions([]);
+  };
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchName.trim()) return;
     setLoading(true);
     setError(null);
-    setFoundAttendee(null);
+    setShowSuggestions(false);
 
     try {
       const response = await fetch(`/api/camp-meeting?action=findAttendee&fullName=${encodeURIComponent(searchName)}`);
@@ -221,14 +252,43 @@ export default function CampMeetingPage() {
 
                 <form onSubmit={handleSearch} className="mb-6">
                   <label className="block text-amber-300 font-bold mb-3 text-lg">Enter Your Name</label>
-                  <input
-                    type="text"
-                    value={searchName}
-                    onChange={(e) => setSearchName(e.target.value)}
-                    placeholder="Type your full name..."
-                    className="w-full px-6 py-4 bg-white/10 border-2 border-amber-400/30 rounded-xl text-white text-lg placeholder-white/40 focus:border-amber-400 focus:outline-none mb-4"
-                  />
-                  <button type="submit" disabled={loading || !searchName.trim()} className={`w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-xl rounded-xl disabled:opacity-50 ${anton.className}`}>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={searchName}
+                      onChange={(e) => { setSearchName(e.target.value); setFoundAttendee(null); }}
+                      onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                      placeholder="Start typing your name..."
+                      className="w-full px-6 py-4 bg-white/10 border-2 border-amber-400/30 rounded-xl text-white text-lg placeholder-white/40 focus:border-amber-400 focus:outline-none"
+                    />
+                    {/* Suggestions Dropdown */}
+                    {showSuggestions && suggestions.length > 0 && (
+                      <div className="absolute z-50 w-full mt-2 bg-slate-800/95 backdrop-blur-xl border-2 border-amber-400/50 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
+                        {suggestions.map((attendee) => (
+                          <button
+                            key={attendee._id}
+                            type="button"
+                            onClick={() => selectAttendee(attendee)}
+                            className="w-full px-4 py-3 text-left hover:bg-amber-500/30 transition-colors border-b border-white/10 last:border-0 flex items-center gap-3"
+                          >
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${attendee.gender === "Male" ? "bg-blue-500/30" : "bg-pink-500/30"}`}>
+                              <svg className={`w-5 h-5 ${attendee.gender === "Male" ? "text-blue-400" : "text-pink-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              </svg>
+                            </div>
+                            <div>
+                              <p className="text-white font-semibold">{attendee.fullName}</p>
+                              <p className="text-white/50 text-sm">{attendee.parish}</p>
+                            </div>
+                            {attendee.signedIn && (
+                              <span className="ml-auto text-green-400 text-xs">Signed In</span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <button type="submit" disabled={loading || !searchName.trim()} className={`w-full py-4 mt-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-xl rounded-xl disabled:opacity-50 ${anton.className}`}>
                     {loading ? "Searching..." : "Find Me"}
                   </button>
                 </form>

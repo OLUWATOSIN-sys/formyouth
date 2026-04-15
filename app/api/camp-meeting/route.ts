@@ -15,6 +15,26 @@ export async function GET(request: NextRequest) {
     
     const db = await getDatabase();
     
+    // Search attendees for autocomplete (returns multiple matches)
+    if (action === "searchAttendees" && fullName) {
+      const searchTerm = fullName.trim();
+      if (searchTerm.length < 2) {
+        return NextResponse.json([]);
+      }
+      
+      // Remove spaces and create flexible pattern
+      const noSpaces = searchTerm.replace(/\s+/g, '');
+      const chars = noSpaces.split('').map((c: string) => c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      const fuzzyPattern = chars.join('.*');
+      
+      const attendees = await db.collection("camp-meeting")
+        .find({ fullName: { $regex: new RegExp(fuzzyPattern, 'i') } })
+        .limit(10)
+        .toArray();
+      
+      return NextResponse.json(attendees);
+    }
+
     // Find attendee by name for sign-in/sign-out lookup
     if (action === "findAttendee" && fullName) {
       // Try exact match first
