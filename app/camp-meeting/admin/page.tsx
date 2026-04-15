@@ -26,6 +26,7 @@ export default function CampMeetingAdminPage() {
   const [filter, setFilter] = useState<"all" | "signedIn" | "signedOut">("all");
   const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
 
   useEffect(() => {
     if (authenticated) {
@@ -77,6 +78,7 @@ export default function CampMeetingAdminPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginLoading(true);
     try {
       const response = await fetch("/api/admin", {
         method: "POST",
@@ -91,6 +93,8 @@ export default function CampMeetingAdminPage() {
       }
     } catch (error) {
       console.error("Login error:", error);
+    } finally {
+      setLoginLoading(false);
     }
   };
 
@@ -154,9 +158,20 @@ export default function CampMeetingAdminPage() {
             </div>
             <button
               type="submit"
-              className="w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white font-bold rounded-xl hover:scale-[1.02] transition-all"
+              disabled={loginLoading}
+              className="w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white font-bold rounded-xl hover:scale-[1.02] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3"
             >
-              Login
+              {loginLoading ? (
+                <>
+                  <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Logging in...
+                </>
+              ) : (
+                "Login"
+              )}
             </button>
           </form>
         </div>
