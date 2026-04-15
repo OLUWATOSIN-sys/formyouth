@@ -134,16 +134,16 @@ export default function CampMeetingPage() {
         {/* Header Section */}
         <div className="text-center mb-10 animate-slide-down">
           {/* Logo */}
-          <div className="mb-6">
+          <div className="-mb-16 md:-mb-24">
             <img
               src="/camp-logo.png"
               alt="YAYA SA 2 Youth Camp 2026"
-              className="w-full max-w-[90vw] md:max-w-5xl lg:max-w-6xl mx-auto h-auto object-contain drop-shadow-2xl scale-110 md:scale-125"
+              className="w-full max-w-[90vw] md:max-w-5xl lg:max-w-6xl mx-auto h-auto object-contain drop-shadow-2xl scale-110 md:scale-125 translate-x-6 md:translate-x-12"
             />
           </div>
           
           {/* Theme Banner */}
-          <div className="inline-block px-8 py-4 bg-gradient-to-r from-amber-500/30 via-orange-500/30 to-red-500/30 backdrop-blur-xl rounded-2xl border border-amber-400/30 shadow-2xl mb-6">
+          <div className="inline-block px-8 py-4 bg-gradient-to-r from-amber-500/30 via-orange-500/30 to-red-500/30 backdrop-blur-xl rounded-2xl border border-amber-400/30 shadow-2xl mb-3">
             <p className={`text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-400 tracking-wide ${anton.className}`}>
               CAVE OF ADULLAM
             </p>
