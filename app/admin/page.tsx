@@ -20,6 +20,19 @@ interface Birthday {
   createdAt: string;
 }
 
+interface CampAttendee {
+  _id: string;
+  date: string;
+  fullName: string;
+  gender: string;
+  parish: string;
+  phone: string;
+  signedIn: boolean;
+  signInTime: string;
+  signOutTime: string | null;
+  createdAt: string;
+}
+
 export default function AdminPage() {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,13 +44,18 @@ export default function AdminPage() {
   
   // Birthday state
   const [birthdays, setBirthdays] = useState<Birthday[]>([]);
-  const [activeTab, setActiveTab] = useState<"suggestions" | "birthdays">("suggestions");
+  const [activeTab, setActiveTab] = useState<"suggestions" | "birthdays" | "camp">("suggestions");
   const [selectedBirthday, setSelectedBirthday] = useState<Birthday | null>(null);
+  
+  // Camp Meeting state
+  const [campAttendees, setCampAttendees] = useState<CampAttendee[]>([]);
+  const [campFilter, setCampFilter] = useState<"all" | "signedIn" | "signedOut">("all");
 
   useEffect(() => {
     if (authenticated) {
       fetchSuggestions();
       fetchBirthdays();
+      fetchCampAttendees();
     }
   }, [authenticated]);
 
@@ -63,6 +81,50 @@ export default function AdminPage() {
     } catch (error) {
       console.error("Error fetching birthdays:", error);
     }
+  };
+
+  const fetchCampAttendees = async () => {
+    try {
+      const response = await fetch("/api/camp-meeting");
+      const data = await response.json();
+      setCampAttendees(data);
+    } catch (error) {
+      console.error("Error fetching camp attendees:", error);
+    }
+  };
+
+  const toggleCampSignIn = async (id: string, currentStatus: boolean) => {
+    try {
+      await fetch("/api/camp-meeting", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          id, 
+          action: currentStatus ? "signOut" : "signIn" 
+        }),
+      });
+      fetchCampAttendees();
+    } catch (error) {
+      console.error("Error toggling sign-in:", error);
+    }
+  };
+
+  const deleteCampAttendee = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this attendee?")) return;
+    try {
+      await fetch(`/api/camp-meeting?id=${id}`, {
+        method: "DELETE",
+      });
+      fetchCampAttendees();
+    } catch (error) {
+      console.error("Error deleting attendee:", error);
+    }
+  };
+
+  const getFilteredCampAttendees = () => {
+    if (campFilter === "signedIn") return campAttendees.filter(a => a.signedIn);
+    if (campFilter === "signedOut") return campAttendees.filter(a => !a.signedIn);
+    return campAttendees;
   };
 
   const deleteBirthday = async (id: string) => {
@@ -256,6 +318,12 @@ export default function AdminPage() {
                     <span className="text-lg">🎂</span>
                     Birthday
                   </a>
+                  <a href="/camp-meeting" className="px-4 py-3 bg-gradient-to-r from-amber-500/20 to-red-500/20 border border-white/[0.1] rounded-xl text-white/70 hover:text-white hover:bg-white/[0.1] transition-all font-medium flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                    </svg>
+                    Camp
+                  </a>
                 </div>
               </div>
             </div>
@@ -293,6 +361,25 @@ export default function AdminPage() {
               {getUpcomingBirthdays().length > 0 && (
                 <span className="px-2 py-1 bg-green-500 rounded-lg text-xs animate-pulse">
                   {getUpcomingBirthdays().length} upcoming
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab("camp")}
+              className={`flex items-center gap-3 px-6 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                activeTab === "camp"
+                  ? "bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white shadow-[0_8px_32px_rgba(245,158,11,0.4)]"
+                  : "bg-white/[0.05] border border-white/[0.1] text-white/60 hover:text-white hover:bg-white/[0.1]"
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+              </svg>
+              Camp Meeting
+              <span className="px-2 py-1 bg-white/20 rounded-lg text-sm">{campAttendees.length}</span>
+              {campAttendees.filter(a => a.signedIn).length > 0 && (
+                <span className="px-2 py-1 bg-green-500 rounded-lg text-xs animate-pulse">
+                  {campAttendees.filter(a => a.signedIn).length} signed in
                 </span>
               )}
             </button>
@@ -604,6 +691,229 @@ export default function AdminPage() {
                       </div>
                     );
                   })}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Camp Meeting Section */}
+          {activeTab === "camp" && (
+            <>
+              {/* Camp Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-10">
+                <div className="group relative backdrop-blur-2xl bg-white/[0.05] border border-white/[0.1] rounded-3xl p-7 hover:bg-white/[0.08] transition-all duration-300 hover:scale-[1.02] cursor-default">
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-600 to-red-600 opacity-0 group-hover:opacity-5 rounded-3xl transition-opacity duration-300" />
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-amber-500/20 to-red-500/20 rounded-xl flex items-center justify-center border border-white/[0.1]">
+                        <svg className="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                      </div>
+                      <span className="text-5xl font-black bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent">
+                        {campAttendees.length}
+                      </span>
+                    </div>
+                    <p className="text-white/50 font-semibold text-sm uppercase tracking-wider">Total Registered</p>
+                  </div>
+                </div>
+
+                <div className="group relative backdrop-blur-2xl bg-white/[0.05] border border-white/[0.1] rounded-3xl p-7 hover:bg-white/[0.08] transition-all duration-300 hover:scale-[1.02] cursor-default">
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-600 to-emerald-500 opacity-0 group-hover:opacity-5 rounded-3xl transition-opacity duration-300" />
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl flex items-center justify-center border border-white/[0.1]">
+                        <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <span className="text-5xl font-black bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
+                        {campAttendees.filter(a => a.signedIn).length}
+                      </span>
+                    </div>
+                    <p className="text-white/50 font-semibold text-sm uppercase tracking-wider">Signed In</p>
+                  </div>
+                </div>
+
+                <div className="group relative backdrop-blur-2xl bg-white/[0.05] border border-white/[0.1] rounded-3xl p-7 hover:bg-white/[0.08] transition-all duration-300 hover:scale-[1.02] cursor-default">
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-600 to-slate-500 opacity-0 group-hover:opacity-5 rounded-3xl transition-opacity duration-300" />
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-gray-500/20 to-slate-500/20 rounded-xl flex items-center justify-center border border-white/[0.1]">
+                        <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                      </div>
+                      <span className="text-5xl font-black bg-gradient-to-r from-gray-500 to-slate-400 bg-clip-text text-transparent">
+                        {campAttendees.filter(a => !a.signedIn).length}
+                      </span>
+                    </div>
+                    <p className="text-white/50 font-semibold text-sm uppercase tracking-wider">Signed Out</p>
+                  </div>
+                </div>
+
+                <div className="group relative backdrop-blur-2xl bg-white/[0.05] border border-white/[0.1] rounded-3xl p-7 hover:bg-white/[0.08] transition-all duration-300 hover:scale-[1.02] cursor-default">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-500 opacity-0 group-hover:opacity-5 rounded-3xl transition-opacity duration-300" />
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-xl flex items-center justify-center border border-white/[0.1]">
+                        <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                      </div>
+                      <span className="text-5xl font-black bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
+                        {[...new Set(campAttendees.map(a => a.parish))].length}
+                      </span>
+                    </div>
+                    <p className="text-white/50 font-semibold text-sm uppercase tracking-wider">Parishes</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Camp Filter */}
+              <div className="flex flex-wrap gap-3 mb-8">
+                {(["all", "signedIn", "signedOut"] as const).map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setCampFilter(f)}
+                    className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                      campFilter === f
+                        ? f === "signedIn"
+                          ? "bg-green-500 text-white shadow-lg shadow-green-500/30"
+                          : f === "signedOut"
+                          ? "bg-gray-500 text-white shadow-lg shadow-gray-500/30"
+                          : "bg-amber-500 text-white shadow-lg shadow-amber-500/30"
+                        : "bg-white/[0.05] text-white/60 hover:bg-white/[0.1] hover:text-white border border-white/[0.1]"
+                    }`}
+                  >
+                    {f === "all" ? "All" : f === "signedIn" ? "Signed In" : "Signed Out"}
+                    <span className="ml-2 px-2 py-0.5 bg-white/20 rounded-md text-xs">
+                      {f === "all" 
+                        ? campAttendees.length 
+                        : f === "signedIn" 
+                        ? campAttendees.filter(a => a.signedIn).length 
+                        : campAttendees.filter(a => !a.signedIn).length}
+                    </span>
+                  </button>
+                ))}
+                <button
+                  onClick={fetchCampAttendees}
+                  className="ml-auto px-5 py-2.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-white/60 hover:text-white hover:bg-white/[0.1] transition-all font-semibold text-sm flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Refresh
+                </button>
+              </div>
+
+              {/* Camp Attendees Grid */}
+              {getFilteredCampAttendees().length === 0 ? (
+                <div className="text-center py-20">
+                  <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-amber-500/20 to-red-500/20 rounded-3xl flex items-center justify-center border border-white/[0.1]">
+                    <svg className="w-12 h-12 text-amber-400/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">No Attendees Yet</h3>
+                  <p className="text-white/50">Camp meeting registrations will appear here</p>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {getFilteredCampAttendees().map((attendee) => (
+                    <div
+                      key={attendee._id}
+                      className="group backdrop-blur-2xl bg-white/[0.05] border border-white/[0.1] rounded-2xl p-6 hover:bg-white/[0.08] transition-all duration-300"
+                    >
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border border-white/[0.1] ${
+                            attendee.gender === "Male" 
+                              ? "bg-gradient-to-br from-blue-500/20 to-indigo-500/20" 
+                              : "bg-gradient-to-br from-pink-500/20 to-rose-500/20"
+                          }`}>
+                            <svg className={`w-7 h-7 ${attendee.gender === "Male" ? "text-blue-400" : "text-pink-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-white">{attendee.fullName}</h3>
+                            <div className="flex flex-wrap items-center gap-3 mt-1">
+                              <span className="text-white/50 text-sm flex items-center gap-1">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                {attendee.parish}
+                              </span>
+                              <span className="text-white/50 text-sm flex items-center gap-1">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                                {attendee.phone}
+                              </span>
+                              <span className={`px-2 py-1 rounded-lg text-xs font-bold ${
+                                attendee.gender === "Male" 
+                                  ? "bg-blue-500/20 text-blue-400" 
+                                  : "bg-pink-500/20 text-pink-400"
+                              }`}>
+                                {attendee.gender}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                          <span className={`px-4 py-2 rounded-xl font-bold text-sm ${
+                            attendee.signedIn 
+                              ? "bg-green-500/20 text-green-400 border border-green-500/30" 
+                              : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
+                          }`}>
+                            {attendee.signedIn ? "Signed In" : "Signed Out"}
+                          </span>
+                          <button
+                            onClick={() => toggleCampSignIn(attendee._id, attendee.signedIn)}
+                            className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
+                              attendee.signedIn
+                                ? "bg-gray-500/20 text-gray-300 hover:bg-gray-500/30 border border-gray-500/30"
+                                : "bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30"
+                            }`}
+                          >
+                            {attendee.signedIn ? "Sign Out" : "Sign In"}
+                          </button>
+                          <button
+                            onClick={() => deleteCampAttendee(attendee._id)}
+                            className="px-3 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl hover:bg-red-500/20 transition-all"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <div className="mt-4 pt-4 border-t border-white/[0.05] flex flex-wrap gap-4 text-white/40 text-sm">
+                        <span className="flex items-center gap-1">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          Date: {new Date(attendee.date).toLocaleDateString()}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Sign-in: {new Date(attendee.signInTime).toLocaleTimeString()}
+                        </span>
+                        {attendee.signOutTime && (
+                          <span className="flex items-center gap-1">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            Sign-out: {new Date(attendee.signOutTime).toLocaleTimeString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </>
