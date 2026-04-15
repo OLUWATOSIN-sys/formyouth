@@ -44,6 +44,17 @@ export default function CampMeetingAdminPage() {
 
   useEffect(() => {
     document.title = "Camp Meeting Admin - Cave of Adullam 2026";
+    // Check for existing session (24 hours)
+    const session = localStorage.getItem("campAdminSession");
+    if (session) {
+      const { expiry } = JSON.parse(session);
+      if (new Date().getTime() < expiry) {
+        setAuthenticated(true);
+      } else {
+        localStorage.removeItem("campAdminSession");
+      }
+    }
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -154,6 +165,9 @@ export default function CampMeetingAdminPage() {
       });
 
       if (response.ok) {
+        // Save session for 24 hours
+        const expiry = new Date().getTime() + 24 * 60 * 60 * 1000;
+        localStorage.setItem("campAdminSession", JSON.stringify({ expiry }));
         setAuthenticated(true);
       } else {
         alert("Invalid password");
