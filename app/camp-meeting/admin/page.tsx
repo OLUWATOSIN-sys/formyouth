@@ -43,6 +43,10 @@ export default function CampMeetingAdminPage() {
   const [registering, setRegistering] = useState(false);
 
   useEffect(() => {
+    document.title = "Camp Meeting Admin - Cave of Adullam 2026";
+  }, []);
+
+  useEffect(() => {
     if (authenticated) {
       fetchAttendees();
       fetchSettings();
