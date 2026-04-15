@@ -11,11 +11,16 @@ interface CampAttendee {
   fullName: string;
   gender: string;
   parish: string;
-  phone: string;
   signedIn: boolean;
   signInTime: string;
   signOutTime: string | null;
   createdAt: string;
+}
+
+interface Settings {
+  signInEnabled: boolean;
+  signInDeadline: string | null;
+  signOutEnabled: boolean;
 }
 
 export default function CampMeetingAdminPage() {
@@ -27,12 +32,42 @@ export default function CampMeetingAdminPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [settings, setSettings] = useState<Settings>({
+    signInEnabled: true,
+    signInDeadline: null,
+    signOutEnabled: false,
+  });
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (authenticated) {
       fetchAttendees();
+      fetchSettings();
     }
   }, [authenticated]);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch("/api/camp-meeting/settings");
+      const data = await response.json();
+      setSettings(data);
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+    }
+  };
+
+  const updateSettings = async (newSettings: Partial<Settings>) => {
+    try {
+      await fetch("/api/camp-meeting/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSettings),
+      });
+      setSettings({ ...settings, ...newSettings });
+    } catch (error) {
+      console.error("Error updating settings:", error);
+    }
+  };
 
   const fetchAttendees = async () => {
     try {
@@ -107,8 +142,7 @@ export default function CampMeetingAdminPage() {
     if (searchTerm) {
       filtered = filtered.filter(a => 
         a.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        a.parish.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        a.phone.includes(searchTerm)
+        a.parish.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
@@ -210,10 +244,100 @@ export default function CampMeetingAdminPage() {
                 </svg>
                 Sign-In Page
               </a>
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className={`p-3 border border-white/[0.1] rounded-xl transition-all ${
+                  showSettings 
+                    ? "bg-amber-500 text-white" 
+                    : "bg-white/[0.05] text-white/60 hover:text-white hover:bg-white/[0.1]"
+                }`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
       </header>
+
+      {/* Settings Panel */}
+      {showSettings && (
+        <div className="border-b border-white/10 bg-slate-900/50 backdrop-blur-xl">
+          <div className="container mx-auto px-6 py-6">
+            <h2 className={`text-xl font-bold text-white mb-6 ${anton.className}`}>
+              ⚙️ Admin Controls
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Sign-In Toggle */}
+              <div className="backdrop-blur-xl bg-white/[0.05] border border-white/[0.1] rounded-2xl p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-white font-semibold">Sign-In</span>
+                  <button
+                    onClick={() => updateSettings({ signInEnabled: !settings.signInEnabled })}
+                    className={`relative w-14 h-7 rounded-full transition-all ${
+                      settings.signInEnabled ? "bg-green-500" : "bg-gray-600"
+                    }`}
+                  >
+                    <span className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${
+                      settings.signInEnabled ? "right-1" : "left-1"
+                    }`} />
+                  </button>
+                </div>
+                <p className="text-white/50 text-sm">
+                  {settings.signInEnabled ? "Users can sign in" : "Sign-in is blocked"}
+                </p>
+              </div>
+
+              {/* Sign-In Deadline */}
+              <div className="backdrop-blur-xl bg-white/[0.05] border border-white/[0.1] rounded-2xl p-5">
+                <span className="text-white font-semibold block mb-3">Sign-In Deadline</span>
+                <input
+                  type="datetime-local"
+                  value={settings.signInDeadline || ""}
+                  onChange={(e) => updateSettings({ signInDeadline: e.target.value || null })}
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm [color-scheme:dark]"
+                />
+                {settings.signInDeadline && (
+                  <button
+                    onClick={() => updateSettings({ signInDeadline: null })}
+                    className="mt-2 text-red-400 text-sm hover:underline"
+                  >
+                    Clear deadline
+                  </button>
+                )}
+                <p className="text-white/50 text-sm mt-2">
+                  {settings.signInDeadline 
+                    ? `Closes: ${new Date(settings.signInDeadline).toLocaleString()}`
+                    : "No deadline set"
+                  }
+                </p>
+              </div>
+
+              {/* Sign-Out Toggle */}
+              <div className="backdrop-blur-xl bg-white/[0.05] border border-white/[0.1] rounded-2xl p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-white font-semibold">Sign-Out</span>
+                  <button
+                    onClick={() => updateSettings({ signOutEnabled: !settings.signOutEnabled })}
+                    className={`relative w-14 h-7 rounded-full transition-all ${
+                      settings.signOutEnabled ? "bg-green-500" : "bg-gray-600"
+                    }`}
+                  >
+                    <span className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${
+                      settings.signOutEnabled ? "right-1" : "left-1"
+                    }`} />
+                  </button>
+                </div>
+                <p className="text-white/50 text-sm">
+                  {settings.signOutEnabled ? "Users can sign out" : "Sign-out is disabled"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="container mx-auto px-6 py-10">
         {/* Stats */}
@@ -316,7 +440,6 @@ export default function CampMeetingAdminPage() {
                       <h3 className="text-xl font-bold text-white">{attendee.fullName}</h3>
                       <div className="flex flex-wrap items-center gap-3 mt-1">
                         <span className="text-white/50 text-sm">{attendee.parish}</span>
-                        <span className="text-white/50 text-sm">{attendee.phone}</span>
                         <span className={`px-2 py-1 rounded-lg text-xs font-bold ${
                           attendee.gender === "Male" ? "bg-blue-500/20 text-blue-400" : "bg-pink-500/20 text-pink-400"
                         }`}>

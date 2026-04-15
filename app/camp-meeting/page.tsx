@@ -5,21 +5,43 @@ import { Anton } from "next/font/google";
 
 const anton = Anton({ subsets: ["latin"], weight: "400" });
 
+interface Settings {
+  signInEnabled: boolean;
+  signInDeadline: string | null;
+  signOutEnabled: boolean;
+}
+
 export default function CampMeetingPage() {
-  useEffect(() => {
-    document.title = "Cave of Adullam 2026 - Camp Meeting Sign-In";
-  }, []);
   const [formData, setFormData] = useState({
     date: "",
     fullName: "",
     gender: "",
     parish: "",
-    phone: "",
   });
+  const [activeTab, setActiveTab] = useState<"signin" | "signout">("signin");
+  const [signOutData, setSignOutData] = useState({ date: "", fullName: "" });
+  const [signOutLoading, setSignOutLoading] = useState(false);
+  const [signOutSuccess, setSignOutSuccess] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [settings, setSettings] = useState<Settings | null>(null);
+
+  useEffect(() => {
+    document.title = "Cave of Adullam 2026 - Camp Meeting Sign-In";
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch("/api/camp-meeting/settings");
+      const data = await response.json();
+      setSettings(data);
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +64,6 @@ export default function CampMeetingPage() {
           fullName: "",
           gender: "",
           parish: "",
-          phone: "",
         });
       } else if (data.error === "already_signed_in") {
         setError(data.message || "You are already signed in for this date!");
@@ -54,6 +75,39 @@ export default function CampMeetingPage() {
       setError("Network error. Please check your connection.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSignOut = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSignOutLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/camp-meeting", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          action: "selfSignOut",
+          fullName: signOutData.fullName,
+          date: signOutData.date
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSignOutSuccess(true);
+        setSignOutData({ date: "", fullName: "" });
+        setTimeout(() => setSignOutSuccess(false), 3000);
+      } else {
+        setError(data.message || "Could not find your sign-in record.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setError("Network error. Please check your connection.");
+    } finally {
+      setSignOutLoading(false);
     }
   };
 
@@ -134,7 +188,7 @@ export default function CampMeetingPage() {
         {/* Header Section */}
         <div className="text-center mb-10 animate-slide-down">
           {/* Logo */}
-          <div className="-mb-16 md:-mb-24">
+          <div className="-mb-4 md:-mb-24">
             <img
               src="/camp-logo.png"
               alt="YAYA SA 2 Youth Camp 2026"
@@ -164,16 +218,39 @@ export default function CampMeetingPage() {
         {/* Sign-In Form Card */}
         <div className="max-w-2xl mx-auto animate-slide-up">
           <div className="backdrop-blur-2xl bg-white/10 border-2 border-amber-400/30 rounded-3xl p-5 sm:p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
-            {/* Form Header */}
-            <div className="text-center mb-8">
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 px-4 py-4 sm:px-6 sm:py-3 bg-gradient-to-r from-amber-500/40 to-orange-500/40 rounded-2xl sm:rounded-full border border-amber-400/40">
-                <svg className="w-8 h-8 text-amber-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            {/* Tabs */}
+            <div className="flex mb-8 bg-white/10 rounded-2xl p-1 border border-amber-400/20">
+              <button
+                type="button"
+                onClick={() => { setActiveTab("signin"); setError(null); }}
+                className={`flex-1 py-3 px-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
+                  activeTab === "signin"
+                    ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg"
+                    : "text-white/60 hover:text-white"
+                } ${anton.className}`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
-                <span className={`text-white font-bold text-lg sm:text-xl text-center ${anton.className}`}>Sign In to Camp Ground</span>
-              </div>
+                Sign In
+              </button>
+              <button
+                type="button"
+                onClick={() => { setActiveTab("signout"); setError(null); }}
+                className={`flex-1 py-3 px-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
+                  activeTab === "signout"
+                    ? "bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg"
+                    : "text-white/60 hover:text-white"
+                } ${anton.className}`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Sign Out
+              </button>
             </div>
 
+            {activeTab === "signin" ? (
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Error Message */}
               {error && (
@@ -287,24 +364,6 @@ export default function CampMeetingPage() {
                 />
               </div>
 
-              {/* Phone Field */}
-              <div className="group">
-                <label className="block text-amber-300 font-bold mb-3 text-lg flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="e.g., +27 xxx xxx xxxx"
-                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/10 border-2 border-amber-400/30 rounded-xl text-white text-base sm:text-lg placeholder-white/40 focus:border-amber-400 focus:ring-4 focus:ring-amber-400/30 focus:outline-none transition-all duration-300 hover:border-amber-400/50 group-hover:bg-white/15"
-                />
-              </div>
-
               {/* Submit Button */}
               <button
                 type="submit"
@@ -329,6 +388,114 @@ export default function CampMeetingPage() {
                 )}
               </button>
             </form>
+            ) : (
+            <>
+              {/* Sign-out disabled message */}
+              {settings && !settings.signOutEnabled && (
+                <div className="p-6 bg-amber-500/20 border-2 border-amber-500/50 rounded-2xl text-center mb-6">
+                  <svg className="w-16 h-16 text-amber-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  <h3 className={`text-2xl font-bold text-amber-400 mb-2 ${anton.className}`}>Sign-Out Not Available Right Now</h3>
+                  
+                </div>
+              )}
+
+              {settings?.signOutEnabled && (
+              <form onSubmit={handleSignOut} className="space-y-6">
+                {/* Success Message */}
+                {signOutSuccess && (
+                <div className="p-4 bg-green-500/20 border-2 border-green-500/50 rounded-xl text-center">
+                  <div className="flex items-center justify-center gap-3">
+                    <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-green-300 font-bold text-lg">Signed out successfully!</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Error Message */}
+              {error && (
+                <div className="p-4 bg-red-500/20 border-2 border-red-500/50 rounded-xl text-center">
+                  <div className="flex items-center justify-center gap-3">
+                    <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <p className="text-red-300 font-bold text-lg">{error}</p>
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => setError(null)}
+                    className="mt-3 text-red-400 underline text-sm hover:text-red-300"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              )}
+
+              {/* Date Field */}
+              <div className="group">
+                <label className="block text-amber-300 font-bold mb-3 text-lg flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Date
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={signOutData.date}
+                  onChange={(e) => setSignOutData({ ...signOutData, date: e.target.value })}
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/10 border-2 border-amber-400/30 rounded-xl text-white text-base sm:text-lg placeholder-white/40 focus:border-amber-400 focus:ring-4 focus:ring-amber-400/30 focus:outline-none transition-all duration-300 [color-scheme:dark] hover:border-amber-400/50 group-hover:bg-white/15"
+                />
+              </div>
+
+              {/* Full Name Field */}
+              <div className="group">
+                <label className="block text-amber-300 font-bold mb-3 text-lg flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  Full Name (as signed in)
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={signOutData.fullName}
+                  onChange={(e) => setSignOutData({ ...signOutData, fullName: e.target.value })}
+                  placeholder="Enter your full name exactly as you signed in"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/10 border-2 border-amber-400/30 rounded-xl text-white text-base sm:text-lg placeholder-white/40 focus:border-amber-400 focus:ring-4 focus:ring-amber-400/30 focus:outline-none transition-all duration-300 hover:border-amber-400/50 group-hover:bg-white/15"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={signOutLoading}
+                className={`w-full py-4 sm:py-6 bg-gradient-to-r from-red-500 via-rose-500 to-pink-500 text-white font-bold text-base sm:text-xl rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-2xl hover:shadow-red-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mt-6 sm:mt-8 ${anton.className}`}
+              >
+                {signOutLoading ? (
+                  <>
+                    <svg className="w-6 h-6 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <span>Signing Out...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    <span>SIGN OUT FROM CAMP</span>
+                  </>
+                )}
+              </button>
+              </form>
+              )}
+            </>
+            )}
 
             {/* Footer Note */}
             <div className="mt-8 text-center">

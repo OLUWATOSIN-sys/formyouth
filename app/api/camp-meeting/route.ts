@@ -25,17 +25,28 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const db = await getDatabase();
 
-    // Check for duplicate sign-in by phone number on the same date
-    const existingByPhone = await db.collection("camp-meeting").findOne({
-      phone: body.phone,
-      date: body.date,
-    });
-
-    if (existingByPhone) {
-      return NextResponse.json(
-        { error: "already_signed_in", message: "This phone number is already signed in for this date." },
-        { status: 409 }
-      );
+    // Check settings for sign-in restrictions
+    const settings = await db.collection("camp-meeting-settings").findOne({ type: "settings" });
+    
+    if (settings) {
+      // Check if sign-in is disabled
+      if (settings.signInEnabled === false) {
+        return NextResponse.json(
+          { error: "blocked", message: "Sign-in is currently disabled by admin." },
+          { status: 403 }
+        );
+      }
+      
+      // Check if sign-in deadline has passed
+      if (settings.signInDeadline) {
+        const deadline = new Date(settings.signInDeadline);
+        if (new Date() > deadline) {
+          return NextResponse.json(
+            { error: "blocked", message: "Sign-in period has ended. Registration is closed." },
+            { status: 403 }
+          );
+        }
+      }
     }
 
     // Check for duplicate by full name on the same date (case-insensitive)
@@ -94,6 +105,70 @@ export async function PATCH(request: NextRequest) {
             signedIn: true, 
             signInTime: new Date(),
             signOutTime: null 
+          } 
+        }
+      );
+    } else if (action === "selfSignOut") {
+      // Check if sign-out is enabled by admin
+      const settings = await db.collection("camp-meeting-settings").findOne({ type: "settings" });
+      
+      if (!settings || settings.signOutEnabled !== true) {
+        return NextResponse.json(
+          { error: "disabled", message: "Sign-out is currently disabled. Please wait for admin to enable it." },
+          { status: 403 }
+        );
+      }
+
+      // Self sign-out by name and date with smart matching
+      const { fullName, date } = body;
+      
+      // First try exact match (case-insensitive)
+      let attendee = await db.collection("camp-meeting").findOne({
+        fullName: { $regex: new RegExp(`^${fullName}$`, 'i') },
+        date: date,
+        signedIn: true
+      });
+
+      // If not found, try fuzzy match (contains search)
+      if (!attendee) {
+        const nameParts = fullName.trim().split(/\s+/);
+        if (nameParts.length >= 2) {
+          // Try matching with first and last name parts
+          const fuzzyPattern = nameParts.map((part: string) => `(?=.*${part})`).join('');
+          attendee = await db.collection("camp-meeting").findOne({
+            fullName: { $regex: new RegExp(fuzzyPattern, 'i') },
+            date: date,
+            signedIn: true
+          });
+        }
+      }
+
+      // If still not found, check if they ever signed in for that date
+      if (!attendee) {
+        const anyRecord = await db.collection("camp-meeting").findOne({
+          fullName: { $regex: new RegExp(fullName.split(/\s+/)[0], 'i') },
+          date: date
+        });
+
+        if (anyRecord && !anyRecord.signedIn) {
+          return NextResponse.json(
+            { error: "already_signed_out", message: "You have already signed out for this date." },
+            { status: 400 }
+          );
+        }
+
+        return NextResponse.json(
+          { error: "not_found", message: "You have not signed in for this date. Please check your name and date." },
+          { status: 404 }
+        );
+      }
+
+      await db.collection("camp-meeting").updateOne(
+        { _id: attendee._id },
+        { 
+          $set: { 
+            signedIn: false, 
+            signOutTime: new Date() 
           } 
         }
       );
