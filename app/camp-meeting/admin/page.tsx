@@ -38,6 +38,9 @@ export default function CampMeetingAdminPage() {
     signOutEnabled: false,
   });
   const [showSettings, setShowSettings] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+  const [newAttendee, setNewAttendee] = useState({ fullName: "", gender: "", parish: "" });
+  const [registering, setRegistering] = useState(false);
 
   useEffect(() => {
     if (authenticated) {
@@ -45,6 +48,31 @@ export default function CampMeetingAdminPage() {
       fetchSettings();
     }
   }, [authenticated]);
+
+  const registerAttendee = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegistering(true);
+    try {
+      const response = await fetch("/api/camp-meeting", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newAttendee),
+      });
+      if (response.ok) {
+        setNewAttendee({ fullName: "", gender: "", parish: "" });
+        fetchAttendees();
+        alert("Attendee registered successfully!");
+      } else {
+        const data = await response.json();
+        alert(data.message || "Failed to register");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error registering attendee");
+    } finally {
+      setRegistering(false);
+    }
+  };
 
   const fetchSettings = async () => {
     try {
@@ -245,6 +273,19 @@ export default function CampMeetingAdminPage() {
                 Sign-In Page
               </a>
               <button
+                onClick={() => setShowRegister(!showRegister)}
+                className={`px-4 py-3 border border-white/[0.1] rounded-xl transition-all flex items-center gap-2 font-medium ${
+                  showRegister 
+                    ? "bg-green-500 text-white" 
+                    : "bg-white/[0.05] text-white/60 hover:text-white hover:bg-white/[0.1]"
+                }`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Register
+              </button>
+              <button
                 onClick={() => setShowSettings(!showSettings)}
                 className={`p-3 border border-white/[0.1] rounded-xl transition-all ${
                   showSettings 
@@ -335,6 +376,52 @@ export default function CampMeetingAdminPage() {
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Register Panel */}
+      {showRegister && (
+        <div className="border-b border-white/10 bg-slate-900/50 backdrop-blur-xl">
+          <div className="container mx-auto px-6 py-6">
+            <h2 className={`text-xl font-bold text-white mb-6 ${anton.className}`}>
+              ➕ Register New Attendee
+            </h2>
+            <form onSubmit={registerAttendee} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={newAttendee.fullName}
+                onChange={(e) => setNewAttendee({ ...newAttendee, fullName: e.target.value })}
+                required
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-green-400"
+              />
+              <select
+                value={newAttendee.gender}
+                onChange={(e) => setNewAttendee({ ...newAttendee, gender: e.target.value })}
+                required
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-green-400"
+              >
+                <option value="" className="bg-slate-800">Select Gender</option>
+                <option value="Male" className="bg-slate-800">Male</option>
+                <option value="Female" className="bg-slate-800">Female</option>
+              </select>
+              <input
+                type="text"
+                placeholder="Parish"
+                value={newAttendee.parish}
+                onChange={(e) => setNewAttendee({ ...newAttendee, parish: e.target.value })}
+                required
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-green-400"
+              />
+              <button
+                type="submit"
+                disabled={registering}
+                className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold rounded-xl disabled:opacity-50"
+              >
+                {registering ? "Registering..." : "Register"}
+              </button>
+            </form>
           </div>
         </div>
       )}

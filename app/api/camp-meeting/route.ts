@@ -2,9 +2,53 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDatabase } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
-export async function GET() {
+// Helper to get South Africa time
+function getSATime() {
+  return new Date(new Date().toLocaleString("en-US", { timeZone: "Africa/Johannesburg" }));
+}
+
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const action = searchParams.get("action");
+    const fullName = searchParams.get("fullName");
+    
     const db = await getDatabase();
+    
+    // Find attendee by name for sign-in/sign-out lookup
+    if (action === "findAttendee" && fullName) {
+      // Try exact match first
+      let attendee = await db.collection("camp-meeting").findOne({
+        fullName: { $regex: new RegExp(`^${fullName}$`, 'i') }
+      });
+      
+      // Fuzzy search if not found
+      if (!attendee) {
+        const nameParts = fullName.trim().split(/\s+/);
+        if (nameParts.length >= 2) {
+          const fuzzyPattern = nameParts.map((part: string) => `(?=.*${part})`).join('');
+          attendee = await db.collection("camp-meeting").findOne({
+            fullName: { $regex: new RegExp(fuzzyPattern, 'i') }
+          });
+        } else if (nameParts.length === 1) {
+          // Search by first name or last name
+          attendee = await db.collection("camp-meeting").findOne({
+            fullName: { $regex: new RegExp(nameParts[0], 'i') }
+          });
+        }
+      }
+      
+      if (!attendee) {
+        return NextResponse.json(
+          { error: "not_found", message: "You are not registered. Please see the registration desk." },
+          { status: 404 }
+        );
+      }
+      
+      return NextResponse.json(attendee);
+    }
+    
+    // Default: return all attendees
     const attendees = await db
       .collection("camp-meeting")
       .find({})
@@ -20,52 +64,30 @@ export async function GET() {
   }
 }
 
+// POST - Admin registers new attendee (not signed in yet)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const db = await getDatabase();
 
-    // Check settings for sign-in restrictions
-    const settings = await db.collection("camp-meeting-settings").findOne({ type: "settings" });
-    
-    if (settings) {
-      // Check if sign-in is disabled
-      if (settings.signInEnabled === false) {
-        return NextResponse.json(
-          { error: "blocked", message: "Sign-in is currently disabled by admin." },
-          { status: 403 }
-        );
-      }
-      
-      // Check if sign-in deadline has passed
-      if (settings.signInDeadline) {
-        const deadline = new Date(settings.signInDeadline);
-        if (new Date() > deadline) {
-          return NextResponse.json(
-            { error: "blocked", message: "Sign-in period has ended. Registration is closed." },
-            { status: 403 }
-          );
-        }
-      }
-    }
-
-    // Check for duplicate by full name on the same date (case-insensitive)
+    // Check for duplicate by full name (case-insensitive)
     const existingByName = await db.collection("camp-meeting").findOne({
-      fullName: { $regex: new RegExp(`^${body.fullName}$`, 'i') },
-      date: body.date,
+      fullName: { $regex: new RegExp(`^${body.fullName}$`, 'i') }
     });
 
     if (existingByName) {
       return NextResponse.json(
-        { error: "already_signed_in", message: "This name is already signed in for this date." },
+        { error: "already_exists", message: "This person is already registered." },
         { status: 409 }
       );
     }
 
     const attendee = {
-      ...body,
-      signedIn: true,
-      signInTime: new Date(),
+      fullName: body.fullName,
+      gender: body.gender,
+      parish: body.parish,
+      signedIn: false,
+      signInTime: null,
       signOutTime: null,
       createdAt: new Date(),
     };
@@ -73,7 +95,7 @@ export async function POST(request: NextRequest) {
     const result = await db.collection("camp-meeting").insertOne(attendee);
     return NextResponse.json({ success: true, id: result.insertedId });
   } catch (error) {
-    console.error("Error creating attendee:", error);
+    console.error("Error registering attendee:", error);
     return NextResponse.json(
       { error: "Failed to register attendee" },
       { status: 500 }
@@ -87,29 +109,53 @@ export async function PATCH(request: NextRequest) {
     const { id, action } = body;
     const db = await getDatabase();
 
-    if (action === "signOut") {
+    // Admin actions by ID
+    if (action === "signOut" && id) {
       await db.collection("camp-meeting").updateOne(
         { _id: new ObjectId(id) },
-        { 
-          $set: { 
-            signedIn: false, 
-            signOutTime: new Date() 
-          } 
-        }
+        { $set: { signedIn: false, signOutTime: new Date() } }
       );
-    } else if (action === "signIn") {
+      return NextResponse.json({ success: true });
+    } 
+    
+    if (action === "signIn" && id) {
       await db.collection("camp-meeting").updateOne(
         { _id: new ObjectId(id) },
-        { 
-          $set: { 
-            signedIn: true, 
-            signInTime: new Date(),
-            signOutTime: null 
-          } 
-        }
+        { $set: { signedIn: true, signInTime: new Date(), signOutTime: null } }
       );
-    } else if (action === "selfSignOut") {
-      // Check if sign-out is enabled by admin
+      return NextResponse.json({ success: true });
+    }
+
+    // Self Sign-In by name
+    if (action === "selfSignIn") {
+      const { attendeeId } = body;
+      
+      const attendee = await db.collection("camp-meeting").findOne({ _id: new ObjectId(attendeeId) });
+      
+      if (!attendee) {
+        return NextResponse.json(
+          { error: "not_found", message: "Attendee not found." },
+          { status: 404 }
+        );
+      }
+
+      if (attendee.signedIn) {
+        return NextResponse.json(
+          { error: "already_signed_in", message: "You are already signed in.", signInTime: attendee.signInTime },
+          { status: 400 }
+        );
+      }
+
+      await db.collection("camp-meeting").updateOne(
+        { _id: new ObjectId(attendeeId) },
+        { $set: { signedIn: true, signInTime: new Date() } }
+      );
+
+      return NextResponse.json({ success: true, signInTime: new Date() });
+    }
+
+    // Self Sign-Out by ID
+    if (action === "selfSignOut") {
       const settings = await db.collection("camp-meeting-settings").findOne({ type: "settings" });
       
       if (!settings || settings.signOutEnabled !== true) {
@@ -119,59 +165,30 @@ export async function PATCH(request: NextRequest) {
         );
       }
 
-      // Self sign-out by name and date with smart matching
-      const { fullName, date } = body;
+      const { attendeeId } = body;
       
-      // First try exact match (case-insensitive)
-      let attendee = await db.collection("camp-meeting").findOne({
-        fullName: { $regex: new RegExp(`^${fullName}$`, 'i') },
-        date: date,
-        signedIn: true
-      });
-
-      // If not found, try fuzzy match (contains search)
+      const attendee = await db.collection("camp-meeting").findOne({ _id: new ObjectId(attendeeId) });
+      
       if (!attendee) {
-        const nameParts = fullName.trim().split(/\s+/);
-        if (nameParts.length >= 2) {
-          // Try matching with first and last name parts
-          const fuzzyPattern = nameParts.map((part: string) => `(?=.*${part})`).join('');
-          attendee = await db.collection("camp-meeting").findOne({
-            fullName: { $regex: new RegExp(fuzzyPattern, 'i') },
-            date: date,
-            signedIn: true
-          });
-        }
-      }
-
-      // If still not found, check if they ever signed in for that date
-      if (!attendee) {
-        const anyRecord = await db.collection("camp-meeting").findOne({
-          fullName: { $regex: new RegExp(fullName.split(/\s+/)[0], 'i') },
-          date: date
-        });
-
-        if (anyRecord && !anyRecord.signedIn) {
-          return NextResponse.json(
-            { error: "already_signed_out", message: "You have already signed out for this date." },
-            { status: 400 }
-          );
-        }
-
         return NextResponse.json(
-          { error: "not_found", message: "You have not signed in for this date. Please check your name and date." },
+          { error: "not_found", message: "Attendee not found." },
           { status: 404 }
         );
       }
 
+      if (!attendee.signedIn) {
+        return NextResponse.json(
+          { error: "not_signed_in", message: "You are not currently signed in." },
+          { status: 400 }
+        );
+      }
+
       await db.collection("camp-meeting").updateOne(
-        { _id: attendee._id },
-        { 
-          $set: { 
-            signedIn: false, 
-            signOutTime: new Date() 
-          } 
-        }
+        { _id: new ObjectId(attendeeId) },
+        { $set: { signedIn: false, signOutTime: new Date() } }
       );
+
+      return NextResponse.json({ success: true, signOutTime: new Date() });
     }
 
     return NextResponse.json({ success: true });
