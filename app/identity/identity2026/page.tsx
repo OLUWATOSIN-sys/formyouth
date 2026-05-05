@@ -204,7 +204,7 @@ export default function RegistrationPage() {
                 required
                 value={formData.fullName}
                 onChange={handleChange('fullName')}
-                placeholder="e.g. Olaniyan Segun"
+                placeholder="Enter your full name"
                 style={inputStyle}
                 onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,215,0,0.6)')}
                 onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)')}
