@@ -289,7 +289,7 @@ export default function ScanPage() {
           <div style={{ textAlign: 'center', marginBottom: '26px' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/icon1.png" alt="RCCG" style={{ height: '50px', objectFit: 'contain', marginBottom: '14px' }} />
-            <h1 style={{ color: 'white', fontSize: '22px', fontWeight: 900, marginBottom: '4px' }}>Check-In Scanner</h1>
+            <h1 style={{ color: 'white', fontSize: '22px', fontWeight: 900, marginBottom: '4px' }}>Check-In</h1>
             <p style={{ color: '#9ca3af', fontSize: '12px' }}>IDENTITY 2026 · RCCG YAYA SA2</p>
           </div>
           <input type="password" value={pw} onChange={e => setPw(e.target.value)} placeholder="Enter access password" autoFocus
@@ -297,7 +297,7 @@ export default function ScanPage() {
             onKeyDown={e => { if (e.key === 'Enter') login(); }} />
           {pwErr && <p style={{ color: '#f87171', fontSize: '13px', textAlign: 'center', marginBottom: '10px' }}>{pwErr}</p>}
           <button onClick={login} style={{ width: '100%', padding: '16px', borderRadius: '13px', border: 'none', background: 'linear-gradient(135deg,#7c3aed,#c026d3)', color: 'white', fontSize: '16px', fontWeight: 900, cursor: 'pointer', letterSpacing: '1px' }}>
-            Open Scanner →
+            Check-In →
           </button>
         </div>
       </div>
@@ -316,7 +316,7 @@ export default function ScanPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/icon1.png" alt="RCCG" className="scan-logo" />
             <div>
-              <h1 className="scan-title"><QrCode size={15} /> Check-In Scanner</h1>
+              <h1 className="scan-title"><QrCode size={15} /> Check-In</h1>
               <p className="scan-sub">IDENTITY 2026 · RCCG YAYA SA2</p>
             </div>
           </div>
@@ -328,7 +328,7 @@ export default function ScanPage() {
 
           {/* Camera panel */}
           <div className="scan-panel">
-            <p className="scan-panel-label">QR Scanner — Always On</p>
+            <p className="scan-panel-label">Check-In Anywhere</p>
             <div className="scan-camera-wrap">
               <Scanner onScan={onScan as (text: string) => void} />
             </div>

@@ -113,7 +113,7 @@ export default function AdminPage() {
           </div>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <a href="/identity2026/scanner" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'linear-gradient(135deg,#7c3aed,#c026d3)', color: 'white', padding: '8px 16px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, textDecoration: 'none' }}>
-              <QrCode size={14} /> Open Scanner
+              <QrCode size={14} /> Check-In
             </a>
             <button onClick={() => setAuthed(false)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.13)', borderRadius: '10px', color: '#9ca3af', padding: '8px 14px', fontSize: '12px', cursor: 'pointer' }}>
               <LogOut size={12} /> Log out
