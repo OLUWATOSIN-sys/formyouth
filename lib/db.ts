@@ -1,4 +1,4 @@
-import { connectDB } from './mongodb';
+import { connectDB } from './mongoose';
 import { RegistrationModel } from './models/Registration';
 import { SettingsModel } from './models/Settings';
 
