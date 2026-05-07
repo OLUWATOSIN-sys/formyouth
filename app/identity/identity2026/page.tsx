@@ -1,11 +1,9 @@
 'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Calendar, Clock, MapPin } from 'lucide-react';
+import { Calendar, Clock, MapPin, CheckCircle2 } from 'lucide-react';
 
 export default function RegistrationPage() {
-  const router = useRouter();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -14,6 +12,7 @@ export default function RegistrationPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
@@ -34,7 +33,7 @@ export default function RegistrationPage() {
       });
       const data = await res.json() as { id?: string; error?: string };
       if (!res.ok) throw new Error(data.error ?? 'Registration failed');
-      router.push(`/ticket/${data.id}`);
+      setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed. Please try again.');
       setLoading(false);
@@ -52,6 +51,29 @@ export default function RegistrationPage() {
     outline: 'none',
     transition: 'border-color 0.2s',
   };
+
+  if (success) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundImage: 'url(/bg.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 16px', position: 'relative' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'linear-gradient(135deg, rgba(40,0,80,0.93) 0%, rgba(100,0,50,0.89) 50%, rgba(10,0,30,0.96) 100%)', zIndex: 0 }} />
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: '460px', width: '100%', background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(24px)', borderRadius: '22px', padding: '48px 32px', border: '1px solid rgba(255,215,0,0.2)', boxShadow: '0 30px 70px rgba(0,0,0,0.55)' }}>
+          <CheckCircle2 size={56} color="#4ade80" style={{ marginBottom: '20px' }} />
+          <h1 style={{ color: 'white', fontSize: '24px', fontWeight: 900, marginBottom: '12px', letterSpacing: '1px' }}>
+            Successful Registration!
+          </h1>
+          <p style={{ color: '#d1d5db', fontSize: '15px', lineHeight: 1.7, marginBottom: '28px' }}>
+            You&apos;ll receive your ticket shortly via email. Please check your inbox (and spam folder) for your IDENTITY 2026 ticket PDF.
+          </p>
+          <button
+            onClick={() => { setSuccess(false); setFormData({ fullName: '', email: '', phone: '', parish: '' }); }}
+            style={{ background: 'linear-gradient(135deg,#FFD700,#FF8C00)', color: '#1a0800', border: 'none', borderRadius: '12px', padding: '13px 32px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', letterSpacing: '1px' }}
+          >
+            Register Another Person
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

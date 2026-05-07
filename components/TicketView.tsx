@@ -333,7 +333,7 @@ export default function TicketView({ registration }: { registration: Registratio
             Print Ticket
           </button>
           <a
-            href="/"
+            href="/identity/identity2026"
             style={{
               background: 'rgba(255,255,255,0.09)',
               color: 'white',
@@ -353,96 +353,6 @@ export default function TicketView({ registration }: { registration: Registratio
           </a>
         </div>
 
-        {/* Event information */}
-        <div
-          className="no-print"
-          style={{
-            marginTop: '28px',
-            background: 'rgba(255,255,255,0.05)',
-            backdropFilter: 'blur(12px)',
-            borderRadius: '18px',
-            padding: '22px 26px',
-            border: '1px solid rgba(255,255,255,0.10)',
-            color: 'rgba(255,255,255,0.82)',
-            fontSize: '13px',
-            lineHeight: 1.75,
-          }}
-        >
-          <div
-            style={{
-              borderBottom: '1px solid rgba(255,215,0,0.25)',
-              paddingBottom: '14px',
-              marginBottom: '14px',
-            }}
-          >
-            <p style={{ color: '#FFD700', fontWeight: 800, fontSize: '14px', marginBottom: '4px' }}>
-              RCCG YAYA SA2 | IDENTITY 2026 | CAPE TOWN
-            </p>
-            <p>Thursday, June 16, 2026 · 09:00 AM</p>
-            <p>Friend of God Campus – Cape Town, ZA</p>
-          </div>
-
-          <p style={{ marginBottom: '12px' }}>
-            Across RCCG Parishes and cities around South Africa, we are seeing an awakening take
-            place and we believe this generation is just getting started.{' '}
-            <strong style={{ color: 'white' }}>IDENTITY 2026</strong> is a call to lean in, to
-            double down, and to step fully into what God is doing in and through this generation.
-          </p>
-          <p style={{ marginBottom: '16px' }}>
-            Make plans to join us at <strong style={{ color: 'white' }}>FRIEND OF GOD</strong> for
-            IDENTITY 2026 as we call a generation to live for what matters most — a{' '}
-            <strong style={{ color: '#FFD700' }}>TRANSFIGURED</strong> life in Jesus.
-          </p>
-
-          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '12px', marginBottom: '14px' }}>
-            Thank you so much for your support. We look forward to seeing you at the program!
-          </p>
-
-          <div
-            style={{
-              borderTop: '1px solid rgba(255,255,255,0.10)',
-              paddingTop: '14px',
-              fontSize: '12px',
-              color: 'rgba(255,255,255,0.60)',
-            }}
-          >
-            <p style={{ fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: '6px' }}>
-              IMPORTANT INFORMATION:
-            </p>
-            <p>• NO own food or drinks may be taken into the venue. Restaurants and bar are available on the day.</p>
-
-            <p
-              style={{
-                fontWeight: 700,
-                color: 'rgba(255,255,255,0.85)',
-                marginTop: '10px',
-                marginBottom: '6px',
-              }}
-            >
-              PHOTOSENSITIVITY WARNING:
-            </p>
-            <p>
-              Strobe lighting, smoke and other intense flashing lights will be used during this
-              event. Not suitable for people with epilepsy or other light-sensitive conditions.
-            </p>
-
-            <div
-              style={{
-                borderTop: '1px solid rgba(255,255,255,0.10)',
-                marginTop: '14px',
-                paddingTop: '14px',
-              }}
-            >
-              <p style={{ fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: '6px' }}>
-                TICKET FOR:
-              </p>
-              <p style={{ color: 'white', fontWeight: 600 }}>{registration.fullName}</p>
-              {registration.parish && (
-                <p style={{ marginTop: '2px' }}>{registration.parish}</p>
-              )}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
