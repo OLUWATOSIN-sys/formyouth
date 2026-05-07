@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useCallback, useEffect } from 'react';
-import { Users, Check, RefreshCw, LogOut, Trash2, QrCode, Clock, Mail, Phone, Building2 } from 'lucide-react';
+import { Users, Check, RefreshCw, LogOut, Trash2, QrCode, Clock, Mail, Phone, Building2, Settings } from 'lucide-react';
 
 const ADMIN_PASSWORD = 'admin2026';
 
@@ -39,6 +39,34 @@ export default function AdminPage() {
   const [regs, setRegs] = useState<Reg[]>([]);
   const [loadingList, setLoadingList] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [capacity, setCapacity] = useState<number | ''>('');
+  const [savedCapacity, setSavedCapacity] = useState<number | null>(null);
+  const [regCount, setRegCount] = useState(0);
+  const [savingCap, setSavingCap] = useState(false);
+  const [capMsg, setCapMsg] = useState('');
+
+  const fetchSettings = useCallback(async () => {
+    try {
+      const r = await fetch('/api/settings');
+      const d = await r.json() as { limit: number | null; count: number };
+      setSavedCapacity(d.limit);
+      setRegCount(d.count);
+      if (d.limit) setCapacity(d.limit);
+    } catch { /* ignore */ }
+  }, []);
+
+  const saveCapacity = async () => {
+    if (!capacity || Number(capacity) < 1) return;
+    setSavingCap(true);
+    setCapMsg('');
+    try {
+      await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ limit: Number(capacity) }) });
+      setSavedCapacity(Number(capacity));
+      setCapMsg('Saved!');
+      setTimeout(() => setCapMsg(''), 2500);
+    } catch { setCapMsg('Failed to save.'); }
+    finally { setSavingCap(false); }
+  };
 
   const fetchRegs = useCallback(async () => {
     setLoadingList(true);
@@ -49,7 +77,7 @@ export default function AdminPage() {
     finally { setLoadingList(false); }
   }, []);
 
-  useEffect(() => { if (authed) void fetchRegs(); }, [authed, fetchRegs]);
+  useEffect(() => { if (authed) { void fetchRegs(); void fetchSettings(); } }, [authed, fetchRegs, fetchSettings]);
 
   const login = () => {
     if (pw === ADMIN_PASSWORD) { setAuthed(true); setPwErr(''); }
@@ -118,6 +146,32 @@ export default function AdminPage() {
             <button onClick={() => setAuthed(false)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.13)', borderRadius: '10px', color: '#9ca3af', padding: '8px 14px', fontSize: '12px', cursor: 'pointer' }}>
               <LogOut size={12} /> Log out
             </button>
+          </div>
+        </div>
+
+        {/* ── Capacity Settings ── */}
+        <div style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(12px)', borderRadius: '16px', border: '1px solid rgba(255,215,0,0.15)', padding: '16px 20px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: '#FFD700', fontWeight: 700, fontSize: '13px', flexShrink: 0 }}>
+            <Settings size={14} /> Registration Limit
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, flexWrap: 'wrap' }}>
+            <input
+              type="number"
+              min={1}
+              value={capacity}
+              onChange={e => setCapacity(e.target.value === '' ? '' : Number(e.target.value))}
+              placeholder="e.g. 500"
+              style={{ width: '110px', background: 'rgba(255,255,255,0.09)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '9px', padding: '8px 12px', color: 'white', fontSize: '14px', outline: 'none' }}
+            />
+            <button onClick={() => void saveCapacity()} disabled={savingCap} style={{ background: 'linear-gradient(135deg,#FFD700,#FF8C00)', color: '#1a0800', border: 'none', borderRadius: '9px', padding: '8px 18px', fontSize: '13px', fontWeight: 800, cursor: savingCap ? 'not-allowed' : 'pointer' }}>
+              {savingCap ? 'Saving…' : 'Set Limit'}
+            </button>
+            {capMsg && <span style={{ color: '#4ade80', fontSize: '12px', fontWeight: 700 }}>{capMsg}</span>}
+          </div>
+          <div style={{ color: '#9ca3af', fontSize: '12px', flexShrink: 0 }}>
+            {savedCapacity !== null
+              ? <span>{regCount} / {savedCapacity} registered{regCount >= savedCapacity ? <span style={{ color: '#f87171', fontWeight: 700 }}> · FULL</span> : ''}</span>
+              : <span style={{ color: '#4b5563' }}>No limit set — unlimited</span>}
           </div>
         </div>
 

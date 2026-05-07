@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createRegistration } from '@/lib/db';
+import { createRegistration, getCapacityLimit, getRegistrationCount } from '@/lib/db';
 import { sendTicketEmail } from '@/lib/mailer';
 
 export async function POST(request: Request) {
@@ -9,6 +9,11 @@ export async function POST(request: Request) {
 
     if (!fullName?.trim()) {
       return NextResponse.json({ error: 'Full name is required' }, { status: 400 });
+    }
+
+    const [limit, count] = await Promise.all([getCapacityLimit(), getRegistrationCount()]);
+    if (limit !== null && count >= limit) {
+      return NextResponse.json({ error: 'Registration is full' }, { status: 409 });
     }
 
     const id = await createRegistration({

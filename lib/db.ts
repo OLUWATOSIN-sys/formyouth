@@ -1,5 +1,6 @@
-import { connectDB } from './mongoose';
+import { connectDB } from './mongodb';
 import { RegistrationModel } from './models/Registration';
+import { SettingsModel } from './models/Settings';
 
 export type { IRegistration as Registration } from './models/Registration';
 
@@ -64,4 +65,24 @@ export async function deleteRegistration(id: string): Promise<boolean> {
   await connectDB();
   const result = await RegistrationModel.deleteOne({ id });
   return result.deletedCount > 0;
+}
+
+export async function getCapacityLimit(): Promise<number | null> {
+  await connectDB();
+  const doc = await SettingsModel.findOne({ key: 'capacity' }).lean<{ value: number }>();
+  return doc ? doc.value : null;
+}
+
+export async function setCapacityLimit(limit: number): Promise<void> {
+  await connectDB();
+  await SettingsModel.findOneAndUpdate(
+    { key: 'capacity' },
+    { value: limit },
+    { upsert: true },
+  );
+}
+
+export async function getRegistrationCount(): Promise<number> {
+  await connectDB();
+  return RegistrationModel.countDocuments();
 }

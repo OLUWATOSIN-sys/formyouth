@@ -13,6 +13,7 @@ export default function RegistrationPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [isFull, setIsFull] = useState(false);
 
   const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
@@ -32,6 +33,7 @@ export default function RegistrationPage() {
         body: JSON.stringify(formData),
       });
       const data = await res.json() as { id?: string; error?: string };
+      if (res.status === 409) { setIsFull(true); return; }
       if (!res.ok) throw new Error(data.error ?? 'Registration failed');
       setSuccess(true);
     } catch (err) {
@@ -51,6 +53,23 @@ export default function RegistrationPage() {
     outline: 'none',
     transition: 'border-color 0.2s',
   };
+
+  if (isFull) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundImage: 'url(/bg.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 16px', position: 'relative' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'linear-gradient(135deg, rgba(40,0,80,0.93) 0%, rgba(100,0,50,0.89) 50%, rgba(10,0,30,0.96) 100%)', zIndex: 0 }} />
+        <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: '460px', width: '100%', background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(24px)', borderRadius: '22px', padding: '48px 32px', border: '1px solid rgba(248,113,113,0.3)', boxShadow: '0 30px 70px rgba(0,0,0,0.55)' }}>
+          <div style={{ fontSize: '52px', marginBottom: '16px' }}>🎟️</div>
+          <h1 style={{ color: 'white', fontSize: '24px', fontWeight: 900, marginBottom: '12px', letterSpacing: '1px' }}>
+            Registration is Full
+          </h1>
+          <p style={{ color: '#d1d5db', fontSize: '15px', lineHeight: 1.7 }}>
+            We have reached maximum capacity for IDENTITY 2026. Thank you for your interest!
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (success) {
     return (
