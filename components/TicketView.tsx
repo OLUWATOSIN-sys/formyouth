@@ -186,7 +186,7 @@ export default function TicketView({ registration }: { registration: Registratio
                     alignItems: 'center',
                     justifyContent: 'center',
                     overflow: 'hidden',
-                    margin: '4px 0',
+                    margin: '2px 0',
                   }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -195,8 +195,9 @@ export default function TicketView({ registration }: { registration: Registratio
                     alt="TRANSFIGURED"
                     style={{
                       width: '100%',
-                      maxHeight: '145px',
+                      height: '100%',
                       objectFit: 'contain',
+                      objectPosition: 'center',
                     }}
                   />
                 </div>
