@@ -303,55 +303,6 @@ export default function TicketView({ registration }: { registration: Registratio
           </div>
         </div>
 
-        {/* Action buttons */}
-        <div
-          className="no-print"
-          style={{
-            display: 'flex',
-            gap: '12px',
-            marginTop: '22px',
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-          }}
-        >
-          <button
-            onClick={() => window.print()}
-            style={{
-              background: 'linear-gradient(135deg, #FFD700 0%, #FF8C00 100%)',
-              color: '#1a0800',
-              border: 'none',
-              borderRadius: '12px',
-              padding: '12px 32px',
-              fontSize: '14px',
-              fontWeight: 800,
-              cursor: 'pointer',
-              letterSpacing: '1px',
-              boxShadow: '0 8px 24px rgba(255,140,0,0.35)',
-            }}
-          >
-            <Printer size={14} style={{ marginRight: 6 }} />
-            Print Ticket
-          </button>
-          <a
-            href="/identity/identity2026"
-            style={{
-              background: 'rgba(255,255,255,0.09)',
-              color: 'white',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: '12px',
-              padding: '12px 24px',
-              fontSize: '14px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              textDecoration: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-            }}
-          >
-            <ArrowLeft size={14} style={{ marginRight: 6 }} />
-            Register Another
-          </a>
-        </div>
 
       </div>
     </div>
