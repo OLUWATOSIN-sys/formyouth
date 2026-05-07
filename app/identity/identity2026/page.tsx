@@ -62,7 +62,7 @@ export default function RegistrationPage() {
             Successful Registration!
           </h1>
           <p style={{ color: '#d1d5db', fontSize: '15px', lineHeight: 1.7, marginBottom: '28px' }}>
-            You&apos;ll receive your ticket shortly via email. Please check your inbox (and spam folder) for your IDENTITY 2026 ticket PDF.
+            You&apos;ll receive an email shortly with your ticket.
           </p>
           <button
             onClick={() => { setSuccess(false); setFormData({ fullName: '', email: '', phone: '', parish: '' }); }}
