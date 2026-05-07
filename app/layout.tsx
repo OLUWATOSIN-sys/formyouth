@@ -1,24 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Suggestion Box",
-  description: "Rccg Heaven's Gate Youth",
+  title: "IDENTITY 2026 | RCCG YAYA SA2",
+  description:
+    "Register for IDENTITY 2026 – RCCG YAYA SA2 Cape Town | Theme: TRANSFIGURED | June 16, 2026",
   icons: {
-    icon: "https://www.rccg.org/wp-content/uploads/2020/11/rccg-for-web.png",
-    shortcut: "https://www.rccg.org/wp-content/uploads/2020/11/rccg-for-web.png",
-    apple: "https://www.rccg.org/wp-content/uploads/2020/11/rccg-for-web.png",
+    icon: "/icon1.png",
+    apple: "/icon1.png",
   },
 };
 
@@ -28,12 +23,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="en" className={geist.variable}>
+      <body>{children}</body>
     </html>
   );
 }
