@@ -1,6 +1,5 @@
 'use client';
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { BrowserQRCodeReader } from '@zxing/browser';
+import { useEffect, useRef, useState } from 'react';
 
 interface Props {
   /** Called every time a NEW unique QR code is detected (debounced per id). */
@@ -9,7 +8,8 @@ interface Props {
 
 export default function BarcodeScanner({ onScan }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const controlsRef = useRef<{ stop: () => void } | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const rafRef = useRef<number | null>(null);
   const lastRef = useRef<{ id: string; ts: number }>({ id: '', ts: 0 });
   const [cameraError, setCameraError] = useState('');
   const [ready, setReady] = useState(false);
@@ -18,45 +18,65 @@ export default function BarcodeScanner({ onScan }: Props) {
   const onScanRef = useRef(onScan);
   useEffect(() => { onScanRef.current = onScan; }, [onScan]);
 
-  const handleResult = useCallback((text: string) => {
-    const now = Date.now();
-    const last = lastRef.current;
-    /* Allow the same ID again only after 4 s to prevent repeated triggers */
-    if (text === last.id && now - last.ts < 4000) return;
-    lastRef.current = { id: text, ts: now };
-    /* Flash feedback */
-    setFlash(true);
-    setTimeout(() => setFlash(false), 300);
-    onScanRef.current(text);
-  }, []);
-
   useEffect(() => {
     let cancelled = false;
     setCameraError('');
     setReady(false);
 
-    const reader = new BrowserQRCodeReader();
+    const canvasEl = document.createElement('canvas');
+    const ctx = canvasEl.getContext('2d', { willReadFrequently: true })!;
 
-    reader
-      .decodeFromVideoDevice(undefined, videoRef.current!, (result) => {
-        if (cancelled || !result) return;
-        handleResult(result.getText());
-      })
-      .then(controls => {
-        if (cancelled) { controls.stop(); return; }
-        controlsRef.current = controls;
+    async function start() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+        });
+        if (cancelled) { stream.getTracks().forEach(t => t.stop()); return; }
+        streamRef.current = stream;
+        const video = videoRef.current!;
+        video.srcObject = stream;
+        await video.play();
+        if (cancelled) return;
         setReady(true);
-      })
-      .catch(() => {
+
+        // @ts-expect-error — BarcodeDetector is not yet in TS lib but available in modern browsers
+        const detector = new (window.BarcodeDetector ?? BarcodeDetector)({ formats: ['qr_code'] });
+
+        function tick() {
+          if (cancelled) return;
+          if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvasEl.width = video.videoWidth;
+            canvasEl.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            detector.detect(canvasEl).then((codes: { rawValue: string }[]) => {
+              if (cancelled || !codes.length) return;
+              const text = codes[0].rawValue;
+              const now = Date.now();
+              const last = lastRef.current;
+              if (text === last.id && now - last.ts < 4000) return;
+              lastRef.current = { id: text, ts: now };
+              setFlash(true);
+              setTimeout(() => setFlash(false), 300);
+              onScanRef.current(text);
+            }).catch(() => { /* detection error — skip frame */ });
+          }
+          rafRef.current = requestAnimationFrame(tick);
+        }
+        rafRef.current = requestAnimationFrame(tick);
+      } catch {
         if (!cancelled) setCameraError('Camera access denied. Please allow camera access and try again.');
-      });
+      }
+    }
+
+    void start();
 
     return () => {
       cancelled = true;
-      try { controlsRef.current?.stop(); } catch { /* ignore */ }
-      controlsRef.current = null;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      streamRef.current?.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
     };
-  }, [handleResult]);
+  }, []);
 
   return (
     <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden' }}>
