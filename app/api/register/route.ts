@@ -33,7 +33,7 @@ export async function POST(request: Request) {
         origin,
       )
         .then(() => console.log(`[email] Ticket sent to ${email.trim()} for ID ${id}`))
-        .catch(err => console.error('[email]', err));
+        .catch(err => console.error('[email] FAILED:', err instanceof Error ? err.message : String(err)));
     }
 
     return NextResponse.json({ id });

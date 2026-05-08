@@ -1,15 +1,6 @@
 import nodemailer from 'nodemailer';
 import { generateTicketPDF, type TicketData } from './ticketPdf';
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: 'rccgsarcbcsa@gmail.com',
-    pass: 'pxunzmwhxxqapcnl',
-  },
-});
 
 function emailHtml(data: TicketData, ticketUrl: string): string {
   return `<!DOCTYPE html>
@@ -119,11 +110,21 @@ export async function sendTicketEmail(
   data: TicketData,
   baseUrl: string,
 ): Promise<void> {
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
   const ticketUrl = `${baseUrl}/ticket/${data.id}`;
   const pdfBuffer = await generateTicketPDF(data, baseUrl);
 
   await transporter.sendMail({
-    from: '"RCCG YAYA SA2 — IDENTITY 2026" <rccgsarcbcsa@gmail.com>',
+    from: `"RCCG YAYA SA2 — IDENTITY 2026" <${process.env.SMTP_USER}>`,
     to: data.email,
     subject: 'Your IDENTITY 2026 Ticket — RCCG YAYA SA2',
     html: emailHtml(data, ticketUrl),
