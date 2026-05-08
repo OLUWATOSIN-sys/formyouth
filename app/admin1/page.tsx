@@ -10,6 +10,8 @@ interface Reg {
   email: string;
   phone: string;
   parish: string;
+  gender: string;
+  age: string;
   createdAt: string;
   checkedIn: boolean;
   checkedInAt?: string;
@@ -208,6 +210,8 @@ export default function AdminPage() {
                     <th style={th}><Mail size={11} style={{ marginRight: 4 }} />Email</th>
                     <th style={th}><Phone size={11} style={{ marginRight: 4 }} />Phone</th>
                     <th style={th}><Building2 size={11} style={{ marginRight: 4 }} />Parish</th>
+                    <th style={th}>Gender</th>
+                    <th style={th}>Age</th>
                     <th style={th}>Status</th>
                     <th style={th}><Clock size={11} style={{ marginRight: 4 }} />Signed In At</th>
                     <th style={th}>Actions</th>
@@ -231,6 +235,8 @@ export default function AdminPage() {
                       <td style={td}>{r.email || <span style={{ color: '#374151' }}>—</span>}</td>
                       <td style={td}>{r.phone || <span style={{ color: '#374151' }}>—</span>}</td>
                       <td style={td}>{r.parish || <span style={{ color: '#374151' }}>—</span>}</td>
+                      <td style={td}>{r.gender || <span style={{ color: '#374151' }}>—</span>}</td>
+                      <td style={td}>{r.age || <span style={{ color: '#374151' }}>—</span>}</td>
                       <td style={td}>
                         {r.checkedIn ? (
                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(74,222,128,0.15)', color: '#4ade80', borderRadius: '20px', padding: '3px 10px', fontSize: '11px', fontWeight: 700 }}>

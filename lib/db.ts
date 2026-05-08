@@ -1,4 +1,4 @@
-import { connectDB } from './mongoose';
+import { connectDB } from './mongodb';
 import { RegistrationModel } from './models/Registration';
 import { SettingsModel } from './models/Settings';
 
@@ -20,6 +20,8 @@ function toPlain(doc: Record<string, unknown>) {
     email: (doc.email as string) ?? '',
     phone: (doc.phone as string) ?? '',
     parish: (doc.parish as string) ?? '',
+    gender: (doc.gender as string) ?? '',
+    age: (doc.age as string) ?? '',
     createdAt: doc.createdAt as string,
     checkedIn: (doc.checkedIn as boolean) ?? false,
     checkedInAt: doc.checkedInAt as string | undefined,
@@ -27,7 +29,7 @@ function toPlain(doc: Record<string, unknown>) {
 }
 
 export async function createRegistration(
-  data: { fullName: string; email: string; phone: string; parish: string },
+  data: { fullName: string; email: string; phone: string; parish: string; gender: string; age: string },
 ): Promise<string> {
   await connectDB();
   const id = generateId();

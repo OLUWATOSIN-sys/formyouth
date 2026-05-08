@@ -9,13 +9,15 @@ export default function RegistrationPage() {
     email: '',
     phone: '',
     parish: '',
+    gender: '',
+    age: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [isFull, setIsFull] = useState(false);
 
-  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -84,7 +86,7 @@ export default function RegistrationPage() {
             You&apos;ll receive an email shortly with your ticket.
           </p>
           <button
-            onClick={() => { setSuccess(false); setFormData({ fullName: '', email: '', phone: '', parish: '' }); }}
+            onClick={() => { setSuccess(false); setFormData({ fullName: '', email: '', phone: '', parish: '', gender: '', age: '' }); }}
             style={{ background: 'linear-gradient(135deg,#FFD700,#FF8C00)', color: '#1a0800', border: 'none', borderRadius: '12px', padding: '13px 32px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', letterSpacing: '1px' }}
           >
             Register Another Person
@@ -325,6 +327,42 @@ export default function RegistrationPage() {
                 onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,215,0,0.6)')}
                 onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)')}
               />
+            </div>
+
+            <div style={{ display: 'flex', gap: '14px' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', color: '#FFD700', fontSize: '10px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '6px' }}>
+                  Gender
+                </label>
+                <select
+                  value={formData.gender}
+                  onChange={handleChange('gender')}
+                  style={{ ...inputStyle, appearance: 'none', WebkitAppearance: 'none' }}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,215,0,0.6)')}
+                  onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)')}
+                >
+                  <option value="" style={{ background: '#1a003a' }}>Select...</option>
+                  <option value="Male" style={{ background: '#1a003a' }}>Male</option>
+                  <option value="Female" style={{ background: '#1a003a' }}>Female</option>
+                </select>
+              </div>
+
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', color: '#FFD700', fontSize: '10px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '6px' }}>
+                  Age
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={120}
+                  value={formData.age}
+                  onChange={handleChange('age')}
+                  placeholder="e.g. 25"
+                  style={inputStyle}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,215,0,0.6)')}
+                  onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)')}
+                />
+              </div>
             </div>
 
             {error && (

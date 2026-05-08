@@ -5,7 +5,7 @@ import { sendTicketEmail } from '@/lib/mailer';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { fullName, email, phone, parish } = body as Record<string, string>;
+    const { fullName, email, phone, parish, gender, age } = body as Record<string, string>;
 
     if (!fullName?.trim()) {
       return NextResponse.json({ error: 'Full name is required' }, { status: 400 });
@@ -21,6 +21,8 @@ export async function POST(request: Request) {
       email: email?.trim() ?? '',
       phone: phone?.trim() ?? '',
       parish: parish?.trim() ?? '',
+      gender: gender?.trim() ?? '',
+      age: age?.trim() ?? '',
     });
 
     /* Send ticket email — fire-and-forget so it never blocks the response */
