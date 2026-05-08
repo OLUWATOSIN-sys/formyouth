@@ -121,19 +121,27 @@ export async function sendTicketEmail(
   });
 
   const ticketUrl = `${baseUrl}/ticket/${data.id}`;
-  const pdfBuffer = await generateTicketPDF(data, baseUrl);
+
+  let pdfBuffer: Buffer | null = null;
+  try {
+    pdfBuffer = await generateTicketPDF(data, baseUrl);
+  } catch (err) {
+    console.error('[email] PDF generation failed, sending without attachment:', err instanceof Error ? err.message : String(err));
+  }
 
   await transporter.sendMail({
     from: `"RCCG YAYA SA2 — IDENTITY 2026" <${process.env.SMTP_USER}>`,
     to: data.email,
     subject: 'Your IDENTITY 2026 Ticket — RCCG YAYA SA2',
     html: emailHtml(data, ticketUrl),
-    attachments: [
-      {
-        filename: `Identity-2026-Ticket-${data.id}.pdf`,
-        content: pdfBuffer,
-        contentType: 'application/pdf',
-      },
-    ],
+    ...(pdfBuffer ? {
+      attachments: [
+        {
+          filename: `Identity-2026-Ticket-${data.id}.pdf`,
+          content: pdfBuffer,
+          contentType: 'application/pdf',
+        },
+      ],
+    } : {}),
   });
 }
